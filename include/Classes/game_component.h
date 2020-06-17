@@ -1,0 +1,5 @@
+#ifndef GAME_COMPONENT_H
+#define GAME_COMPONENT_H
+
+
+#endif /* GAME_COMPONENT_H */

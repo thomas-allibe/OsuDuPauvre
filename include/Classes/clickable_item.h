@@ -1,0 +1,5 @@
+#ifndef CLICKABLE_ITEM_H
+#define CLICKABLE_ITEM_H
+
+
+#endif /* CLICKABLE_ITEM_H */
