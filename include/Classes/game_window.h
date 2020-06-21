@@ -12,7 +12,7 @@ typedef struct{
 
 //GameWindow_ctor arguments
 typedef struct{
-    char *title;
+    const char *title;
     int x; int y;
     int w; int h;
     Uint32 flags;
@@ -25,7 +25,7 @@ typedef struct{
 
 //GameWindow Methods
 //Constructor prototype
-int GameWindow_ctor(GameWindow * const me, WindowOptions w_op, RendererOptions r_op);
+int GameWindow_ctor(GameWindow * const me, WindowOptions *w_op, RendererOptions *r_op);
 //Destructor prototype
 void GameWindow_dtor(GameWindow * const me);
 

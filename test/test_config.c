@@ -10,7 +10,7 @@ typedef struct{
 }Data;
 
 int main(){
-    FILE *file = fopen("../settings.config", "r+");
+    FILE *file = fopen("settings.conf", "w+");
     Data donnee, lecture;
     donnee.entier = -127;
     donnee.caractere = 'D';

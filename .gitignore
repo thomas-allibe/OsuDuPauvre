@@ -2,7 +2,6 @@
 .vscode/settings.json
 obj/main.d
 obj/main.o
-OsuDuPauvre.exe
 obj/Classes/game_window.d
 obj/Classes/game_window.o
-test/testconfig.exe
+*.exe

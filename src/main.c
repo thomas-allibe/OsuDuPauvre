@@ -10,6 +10,8 @@
 /* SDL includes */
 #include <SDL2/SDL.h>
 /* Custom includes */
+#include "initialize_functions.h"
+#include "iniparser/iniparser.h"
 #include "Classes/game_window.h"
 /*
 #include "Classes/game_component.h"
@@ -23,12 +25,21 @@
 
 //Typedef
 
-typedef enum {Initialize, Wait, Error, Quit, Stop}State;
+typedef enum {Initialize, , Wait, Error, Quit, Stop}State;
+
+typedef struct{
+    int foo;
+}Input;
 
 //Functions
 
 int libInit();
 void libDeInit();
+
+void getUserEvent();
+
+//Global Variables
+const char *GAME_TITLE = "OsuDuPauvre!";
 
 /*######################################################################################*/
 /*#										   MAIN        								   #*/
@@ -38,20 +49,9 @@ int main(int argc, char *argv[]){
     State state_machine = Initialize;
     int statut = EXIT_SUCCESS;
 
-
+    dictionary *settings = NULL;
+    //Classes
     GameWindow gw = {NULL, NULL};
-
-    char *game_title = "OsuDuPauvre!";
-
-    WindowOptions wo;
-    wo.title = game_title;
-    wo.x = SDL_WINDOWPOS_CENTERED; wo.y = SDL_WINDOWPOS_CENTERED;
-    wo.w = 1080; wo.h = 720;
-    wo.flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
-
-    RendererOptions ro;
-    ro.index = -1;
-    ro.flags = SDL_RENDERER_ACCELERATED;
 
 /*------------------------------------Verif Arguments-----------------------------------*/
     if(argc < 2){
@@ -65,11 +65,19 @@ int main(int argc, char *argv[]){
             
             case Initialize:
                 fprintf(stderr, "Initialize\n");
+
                 if(libInit() < 0){
                     state_machine = Error;
                     break;
                 }
-                if(GameWindow_ctor(&gw, wo, ro) < 0){
+
+                settings = getSettings("settings.ini");
+                if(settings == NULL){
+                    state_machine = Error;
+                    break;
+                }
+
+                if(createMainWindow(settings, &gw, GAME_TITLE) < 0){
                     state_machine = Error;
                     break;
                 }
@@ -79,6 +87,7 @@ int main(int argc, char *argv[]){
 
             case Wait:
                 fprintf(stderr, "Wait\n");                
+                
                 SDL_Delay(atoi(argv[1]));
 
                 state_machine = Quit;
@@ -86,6 +95,7 @@ int main(int argc, char *argv[]){
             
             case Error:
                 fprintf(stderr, "Error\n");
+                
                 statut = EXIT_FAILURE;
                 
                 state_machine = Quit;
@@ -93,6 +103,8 @@ int main(int argc, char *argv[]){
             
             case Quit:
                 fprintf(stderr, "Quit\n");
+                
+                iniparser_freedict(settings);
                 GameWindow_dtor(&gw);
                 libDeInit();
 
@@ -126,4 +138,14 @@ int libInit(){
 void libDeInit(){
     //SDL DEINIT
     SDL_Quit();
+}
+/*--------------------------------------------------------------------------------------*/
+/*-									   libInit()      							       -*/
+/*-                          get user event for this cycle                             -*/
+/*--------------------------------------------------------------------------------------*/
+void getUserEvent(){
+    SDL_Event event;
+    while(SDL_PollEvent(&event)){
+
+    }
 }

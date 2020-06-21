@@ -12,7 +12,8 @@ gcc -Wall -Wextra -L ./lib -I ./include src/main.c -o main -lmingw32 -lSDL2main 
 Convensions :
     a_file.c : source & header files
     StructName : struct & classes
-    Class_method : methods
+    Class_methodName : methods
     functionName : functions
     variable_name : variables
-    _data : private data
+    _xxx : private data & functions
+    GLOBAL_DATA : #define & global variables
