@@ -1,23 +1,10 @@
 #ifndef INITIALIZE_FUNCTIONS_H
 #define INITIALIZE_FUNCTIONS_H
 
-#include <SDL2/SDL_error.h>
+#include <SDL2/SDL.h>
+#include "global_variables.h"
 #include "Classes/game_window.h"
-#include "iniparser/iniparser.h"
 
-//Number of sections & keys in Setting.ini file
-#define NB_SECTIONS 3
-#define NB_KEYS 2
-
-/*-------------------------------------------------------------------------*/
-/**
-  @brief    get settings from an ini file
-  @param    ini_path     path for ini file
-  @return   dictionary containing settings, NULL if error
-
- */
-/*--------------------------------------------------------------------------*/
-dictionary *getSettings(char *ini_path);
 
 /*-------------------------------------------------------------------------*/
 /**
@@ -29,7 +16,7 @@ dictionary *getSettings(char *ini_path);
 
  */
 /*--------------------------------------------------------------------------*/
-int createMainWindow(dictionary *settings, GameWindow *gw, const char *title);
+int createMainWindow(GameWindow *gw);
 
 
 #endif /* INITIALIZE_FUNCTIONS_H */

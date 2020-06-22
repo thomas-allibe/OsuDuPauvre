@@ -10,7 +10,10 @@
 /* SDL includes */
 #include <SDL2/SDL.h>
 /* Custom includes */
+#include "global_variables.h"
+#include "ini_settings.h"
 #include "initialize_functions.h"
+#include "my_events.h"
 #include "iniparser/iniparser.h"
 #include "Classes/game_window.h"
 /*
@@ -25,21 +28,14 @@
 
 //Typedef
 
-typedef enum {Initialize, , Wait, Error, Quit, Stop}State;
-
-typedef struct{
-    int foo;
-}Input;
 
 //Functions
-
 int libInit();
 void libDeInit();
 
-void getUserEvent();
-
-//Global Variables
+//global_variables.h
 const char *GAME_TITLE = "OsuDuPauvre!";
+Settings GAME_SETTINGS; //Values are set in initialize_functions.c
 
 /*######################################################################################*/
 /*#										   MAIN        								   #*/
@@ -47,9 +43,9 @@ const char *GAME_TITLE = "OsuDuPauvre!";
 int main(int argc, char *argv[]){
 /*---------------------------------------Variables--------------------------------------*/
     State state_machine = Initialize;
+    Input user_input;
     int statut = EXIT_SUCCESS;
 
-    dictionary *settings = NULL;
     //Classes
     GameWindow gw = {NULL, NULL};
 
@@ -62,29 +58,41 @@ int main(int argc, char *argv[]){
 /*-------------------------------------State Machine------------------------------------*/
     while(state_machine != Stop){
         switch(state_machine){
-            
+//### INITIALIZE            
             case Initialize:
                 fprintf(stderr, "Initialize\n");
 
-                if(libInit() < 0){
-                    state_machine = Error;
-                    break;
-                }
-
-                settings = getSettings("settings.ini");
-                if(settings == NULL){
-                    state_machine = Error;
-                    break;
-                }
-
-                if(createMainWindow(settings, &gw, GAME_TITLE) < 0){
-                    state_machine = Error;
-                    break;
-                }
-
+                //No error
                 state_machine = Wait;
-                break;
+                
+                setDefaultSettingsGV();
 
+                if(libInit() != 0){
+                    state_machine = Error;
+                    break;
+                }
+
+                if(getIniSettings("settings.ini") != 0){
+                    state_machine = Error;
+                    break;
+                }
+
+                if(createMainWindow(&gw) != 0){
+                    state_machine = Error;
+                    break;
+                }
+
+                state_machine = GetUserEvent;
+                break;
+            
+//### GET USER EVENT            
+            case GetUserEvent:
+
+                state_machine = getUserEvent(&user_input);
+
+                break;
+            
+//### WAIT            
             case Wait:
                 fprintf(stderr, "Wait\n");                
                 
@@ -93,6 +101,7 @@ int main(int argc, char *argv[]){
                 state_machine = Quit;
                 break;
             
+//### ERROR            
             case Error:
                 fprintf(stderr, "Error\n");
                 
@@ -101,29 +110,31 @@ int main(int argc, char *argv[]){
                 state_machine = Quit;
                 break;
             
+//### QUIT            
             case Quit:
                 fprintf(stderr, "Quit\n");
                 
-                iniparser_freedict(settings);
                 GameWindow_dtor(&gw);
                 libDeInit();
 
                 state_machine = Stop;
                 break;
             
+//### DEFAULT            
             default:
                 fprintf(stderr, "Default\n");
                 //Code
                 state_machine = Quit;
-        }
-    }
+        }//End switch
+    }//End while
     
     return statut;
 }
 
 /*--------------------------------------------------------------------------------------*/
-/*-									   libInit()      							       -*/
-/*-                    Functions for library initialization : SDL2                     -*/
+/*-								 libInit() / libDeInit     					           -*/
+/*-             Functions for library initialization & deinitialization                -*/
+/*-                                     SDL2                                           -*/
 /*--------------------------------------------------------------------------------------*/
 int libInit(){
     //SDL INIT
@@ -138,14 +149,4 @@ int libInit(){
 void libDeInit(){
     //SDL DEINIT
     SDL_Quit();
-}
-/*--------------------------------------------------------------------------------------*/
-/*-									   libInit()      							       -*/
-/*-                          get user event for this cycle                             -*/
-/*--------------------------------------------------------------------------------------*/
-void getUserEvent(){
-    SDL_Event event;
-    while(SDL_PollEvent(&event)){
-
-    }
 }

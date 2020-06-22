@@ -1,7 +1,13 @@
 .vscode/c_cpp_properties.json
 .vscode/settings.json
+*.exe
 obj/main.d
 obj/main.o
 obj/Classes/game_window.d
 obj/Classes/game_window.o
-*.exe
+obj/ini_settings.d
+obj/ini_settings.o
+obj/initialize_functions.d
+obj/initialize_functions.o
+obj/my_events.d
+obj/my_events.o

@@ -40,7 +40,7 @@ INCFLAGS = -I ./$(INCDIR)
 #Paths are relative to the Makefile
 EXEC = OsuDuPauvre
 SRC = src/main.c
-SRC += src/initialize_functions.c
+SRC += src/initialize_functions.c src/ini_settings.c src/my_events.c
 SRC += src/Classes/game_window.c
 # SRC = $(wildcard *.c) can be used instead of manual completion
 
