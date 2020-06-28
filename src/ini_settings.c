@@ -8,9 +8,12 @@
  */
 /*--------------------------------------------------------------------------*/
 void setDefaultSettingsGV(){
+//Window
     GAME_SETTINGS.window_w = 1280;
     GAME_SETTINGS.window_h = 720;
-
+//Controls 
+    GAME_SETTINGS.controls_hit1 = SDLK_w;
+    GAME_SETTINGS.controls_hit2 = SDLK_x;
 }
 
 
@@ -28,6 +31,7 @@ int getIniSettings(char *ini_path){
     FILE *ini_file = NULL;
 
     int tmp_int = -1;
+    const char *tmp_char = NULL;
 
     SDL_Rect bounds;
 
@@ -41,10 +45,12 @@ int getIniSettings(char *ini_path){
         //Set default values, IN THE SAME ORDER AS SETTING_KEYS
         sprintf(setting_values[0], "%d", GAME_SETTINGS.window_w);
         sprintf(setting_values[1], "%d", GAME_SETTINGS.window_h);
+        sprintf(setting_values[2], "%c", GAME_SETTINGS.controls_hit1);
+        sprintf(setting_values[3], "%c", GAME_SETTINGS.controls_hit2);
     // WARNING
     // The else case (of settings == NULL) uses these arrays content individualy
     // If they are modified, the code below has to be modified
-
+    
 /*------------------------------------Core----------------------------------*/
     settings = iniparser_load(ini_path);
     if(settings == NULL){
@@ -101,10 +107,10 @@ int getIniSettings(char *ini_path){
             bounds.h = MAX_HIGHT;
         }
         
-        
+//### Window section
         //### Window Width / key = "window:width" ###
         tmp_int = iniparser_getint(settings, setting_keys[0], -1);
-        if(MIN_WIDTH <= tmp_int  &&  tmp_int <= bounds.w){
+        if( _valid_int(tmp_int, MIN_WIDTH, bounds.w) ){
             GAME_SETTINGS.window_w = tmp_int;
         }
         else{
@@ -117,16 +123,38 @@ int getIniSettings(char *ini_path){
 
         //### Window Hight / key = "window:hight" ###
         tmp_int = iniparser_getint(settings, setting_keys[1], -1);
-        if(MIN_HIGHT <= tmp_int  &&  tmp_int <= bounds.h){
+        if( _valid_int(tmp_int, MIN_HIGHT, bounds.h) ){
             GAME_SETTINGS.window_h = tmp_int;
         }
         else{
-            //Keep GAME_SETTINGS.window_h default value
-            //Since ini value is invalid, replace it with default
             iniparser_set(settings, setting_keys[1], setting_values[1]);
             flag_new_key = 1;
         }
-/*        
+
+//### Controls section
+        //### Controls Hit1 / key = "controls:hit1" ###    
+        if((tmp_char = iniparser_getstring(settings, setting_keys[2], NULL)) != NULL){    
+            if( _valid_char(*tmp_char) ){
+                GAME_SETTINGS.controls_hit1 = (SDL_Keycode) tolower(*tmp_char);
+            }
+        }
+        else{
+            iniparser_set(settings, setting_keys[2], setting_values[2]);
+            flag_new_key = 1;
+        }
+
+        //### Controls Hit2 / key = "controls:hit2" ###
+        if((tmp_char = iniparser_getstring(settings, setting_keys[3], NULL)) != NULL){    
+            if( _valid_char(*tmp_char) ){
+                GAME_SETTINGS.controls_hit2 = (SDL_Keycode) tolower(*tmp_char);
+            }
+        }
+        else{
+            iniparser_set(settings, setting_keys[3], setting_values[3]);
+            flag_new_key = 1;
+        }
+
+/*  //Not implemented anymore      
         //Check keys
         for(int i=0 ; i<NB_KEYS ; i++){
             if(iniparser_find_entry(settings, setting_keys[i]) == 0){
@@ -150,4 +178,54 @@ int getIniSettings(char *ini_path){
     iniparser_freedict(settings);
 
     return 0;
+}
+
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    check the value of an int, no bad input checking
+  @param    number     number to check
+  @param    min        min value     
+  @param    max        max value
+  @return   1 if min <= number <= max, 0 if not
+
+ */
+/*--------------------------------------------------------------------------*/
+int _valid_int(int number, int min, int max){
+    return ( min <= number  &&  number <= max );
+}
+
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    check the value of an char
+  @param    c     char to check
+  @return   1 if c is a number or a letter, 0 if not
+
+ */
+/*--------------------------------------------------------------------------*/
+int _valid_char(char c){
+    return (('0'<= c && c <= '9') ||
+            ('a'<= c && c <= 'z') ||
+            ('A'<= c && c <= 'Z')   );
+}
+
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    convert a char to the corresponding keyboard scancode
+  @param    c     char to convert, number or letter !!!
+  @return   the scancode if c is valid, SDL_SCANCODE_UNKNOWN if not
+ 
+    Upper case & lower case return the same scancode
+ */
+/*--------------------------------------------------------------------------*/
+SDL_Scancode _char_to_scancode(char c){
+    if(c == '0')
+        return SDL_SCANCODE_0;
+    if('1'<= c && c <= '9')
+        return SDL_SCANCODE_1 + (SDL_Scancode)(c - '1');
+    if('a'<= c && c <= 'z')
+        return SDL_SCANCODE_A + (SDL_Scancode)(c - 'a');
+    if('A'<= c && c <= 'Z')
+        return SDL_SCANCODE_A + (SDL_Scancode)(c - 'A');
+
+    return SDL_SCANCODE_UNKNOWN;
 }

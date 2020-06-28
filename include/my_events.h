@@ -2,7 +2,7 @@
 #define MY_EVENTS_H
 
 #include <stdio.h>
-#include <SDL2/SDL_events.h>
+#include <SDL2/SDL.h>
 #include "global_variables.h"
 
 

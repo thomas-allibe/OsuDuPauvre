@@ -44,6 +44,14 @@ int main(int argc, char *argv[]){
 /*---------------------------------------Variables--------------------------------------*/
     State state_machine = Initialize;
     Input user_input;
+        user_input.quit = SDL_FALSE;
+        user_input.hit1 = SDL_FALSE;
+        user_input.hit1_r = SDL_FALSE;
+        user_input.hit2 = SDL_FALSE;
+        user_input.hit2_r = SDL_FALSE;
+        user_input.mouse_x = 0;
+        user_input.mouse_y = 0;
+    
     int statut = EXIT_SUCCESS;
 
     //Classes
@@ -71,13 +79,15 @@ int main(int argc, char *argv[]){
                     state_machine = Error;
                     break;
                 }
-
                 if(getIniSettings("settings.ini") != 0){
                     state_machine = Error;
                     break;
                 }
-
                 if(createMainWindow(&gw) != 0){
+                    state_machine = Error;
+                    break;
+                }
+                if(GameWindow_setIcon(&gw, "../images/w_ico_1.bmp") != 0){
                     state_machine = Error;
                     break;
                 }
@@ -87,11 +97,28 @@ int main(int argc, char *argv[]){
             
 //### GET USER EVENT            
             case GetUserEvent:
-
                 state_machine = getUserEvent(&user_input);
-
                 break;
             
+//### UPDATE OBJECTS
+            case UpdateObjects:
+                fprintf(stderr, "x= %4d, y= %4d, h1= %1d:%1d, h2= %1d:%1d\r",
+                        user_input.mouse_x, user_input.mouse_y,
+                        user_input.hit1, user_input.hit1_r,
+                        user_input.hit2, user_input.hit2_r);
+                user_input.hit1 = SDL_FALSE;
+                user_input.hit1_r = SDL_FALSE;
+                user_input.hit2 = SDL_FALSE;
+                user_input.hit2_r = SDL_FALSE;
+
+                state_machine = GetUserEvent;
+                break;            
+
+//### RENDER CHANGES
+            case RenderChanges:
+
+
+                break;
 //### WAIT            
             case Wait:
                 fprintf(stderr, "Wait\n");                
@@ -103,7 +130,7 @@ int main(int argc, char *argv[]){
             
 //### ERROR            
             case Error:
-                fprintf(stderr, "Error\n");
+                fprintf(stderr, "%s\n", SDL_GetError());
                 
                 statut = EXIT_FAILURE;
                 
