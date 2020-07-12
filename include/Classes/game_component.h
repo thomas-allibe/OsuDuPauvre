@@ -60,14 +60,36 @@ int GameComponent_renderCopy(GameComponent * const me);
 
 /*-------------------------------------------------------------------------*/
 /**
+  @brief    Set width & height according to original
+  @param    me     pointer to GameComponent
+  @return   0 if succeeded, less than 0 if failed
+
+ */
+/*--------------------------------------------------------------------------*/
+int GameComponent_set_default_WH(GameComponent *me);
+
+/*-------------------------------------------------------------------------*/
+/**
   @brief    Set new x & y position
   @param    me     pointer to GameComponent
-  @param    x      x position int pixels
-  @param    y      y position int pixels
+  @param    x      x position in pixels
+  @param    y      y position in pixels
   @return   void
 
  */
 /*--------------------------------------------------------------------------*/
-void GameComponent_setXY(GameComponent *me, int x, int y);
+void GameComponent_set_XY(GameComponent *me, int x, int y);
+
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    Set new width & height
+  @param    me     pointer to GameComponent
+  @param    w      width in pixels
+  @param    h      height in pixels
+  @return   void
+
+ */
+/*--------------------------------------------------------------------------*/
+void GameComponent_set_WH(GameComponent *me, int w, int h);
 
 #endif /* GAME_COMPONENT_H */

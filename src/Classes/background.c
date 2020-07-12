@@ -17,25 +17,14 @@
 /*--------------------------------------------------------------------------*/
 int Background_ctor(Background * const me, SDL_Renderer *r, const char *path){
     //Subclass attributes
-    SDL_Surface *surface = NULL;
     SDL_Texture *texture = NULL;
-    
-    surface = SDL_LoadBMP(path);
-    if(surface == NULL){
-        #if BG_ERR_PRINT
-        fprintf(stderr, "Erreur SDL_LoadBMP : %s", SDL_GetError());
-        #endif
-        return -1;
-    }
-
-    texture = SDL_CreateTextureFromSurface(r, surface);
+    texture = loadImageStatic(path, PNG, r);
     if(texture == NULL){
-        #if BG_ERR_PRINT
-        fprintf(stderr, "Erreur SDL_CreateTextureFromSurface : %s", SDL_GetError());
+        #ifndef BG_ERR_PRINT
+        fprintf(stderr, "Erreur loadImageStatic : %s", SDL_GetError());
         #endif
         return -1;
     }
-    SDL_FreeSurface(surface);
     
     //Superclass constructor
     if(GameComponent_ctor(&me->super, r, texture) != 0){

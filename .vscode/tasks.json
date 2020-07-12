@@ -1,0 +1,36 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "OpenWindowsTerminal",
+            "type": "shell",
+            "command": "wt",
+            "args": [
+                "-p",
+                "Windows PowerShell",
+                "-d",
+                "${workspaceFolder}",
+                "`;",
+                "new-tab",
+                "-p",
+                "cmd",
+                "-d",
+                "${workspaceFolder}/bin"
+            ],
+            "runOptions": {
+                "runOn": "default",
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            
+        }
+    ]
+}

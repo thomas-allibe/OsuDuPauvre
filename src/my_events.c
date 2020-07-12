@@ -17,7 +17,7 @@ State getUserEvent(Input *usr_input){
         if(event.type == SDL_MOUSEMOTION){
             usr_input->mouse_x = event.motion.x;
             usr_input->mouse_y = event.motion.y;
-            next_state = DoSomething;
+            next_state = UpdateObjects;
         }//End Mouse Motion
 
     //###  Key Down
@@ -32,7 +32,7 @@ State getUserEvent(Input *usr_input){
                 else{
                     usr_input->hit1_r = SDL_TRUE;
                 }
-                next_state = DoSomething;
+                next_state = UpdateObjects;
             }
             //hit2
             if(event.key.keysym.sym == GAME_SETTINGS.controls_hit2){
@@ -44,7 +44,7 @@ State getUserEvent(Input *usr_input){
                 else{
                     usr_input->hit2_r = SDL_TRUE;
                 }
-                next_state = DoSomething;
+                next_state = UpdateObjects;
             }
             //escape
             if(event.key.keysym.sym == SDLK_ESCAPE){
@@ -58,7 +58,7 @@ State getUserEvent(Input *usr_input){
     //###  Mouse Button Down
         if(event.type == SDL_MOUSEBUTTONDOWN){
             usr_input->hit1 = SDL_TRUE;
-            next_state = DoSomething;
+            next_state = UpdateObjects;
         }//End Mouse Button Down
         
     //###  Quit

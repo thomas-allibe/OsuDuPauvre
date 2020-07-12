@@ -9,6 +9,7 @@
 #include <stdlib.h>
 /* SDL includes */
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 /* Custom includes */
 #include "global_variables.h"
 #include "ini_settings.h"
@@ -16,10 +17,10 @@
 #include "my_events.h"
 #include "iniparser/iniparser.h"
 #include "Classes/game_window.h"
+#include "Classes/gameboard.h"
 /*
 #include "Classes/game_component.h"
 #include "Classes/background.h"
-#include "Classes/clickable_item.h"
 #include "Classes/circle.h"
 */
 /*======================================================================================*/
@@ -56,12 +57,13 @@ int main(int argc, char *argv[]){
 
     //Classes
     GameWindow gw = {NULL, NULL};
+    GameBoard gb;
 
 /*------------------------------------Verif Arguments-----------------------------------*/
-    if(argc < 2){
-	    	printf("Pas assez d'arguments : ./OsuDuPauvre.exe TIME\n");
-	    	return 1;
-	    }
+    Uint32 delay = 2000;
+    if(argc > 1){
+	    delay = atoi(argv[1]);
+	}
 
 /*-------------------------------------State Machine------------------------------------*/
     while(state_machine != Stop){
@@ -123,7 +125,7 @@ int main(int argc, char *argv[]){
             case Wait:
                 fprintf(stderr, "Wait\n");                
                 
-                SDL_Delay(atoi(argv[1]));
+                SDL_Delay(delay);
 
                 state_machine = Quit;
                 break;
@@ -170,10 +172,18 @@ int libInit(){
         return -1;
     }
 
+    //SDL_Image INIT
+    if(IMG_Init(IMG_INIT_PNG) == 0){
+        fprintf(stderr, "Error IMG_Init : %s", SDL_GetError());
+        return -1;
+    }
+
     return 0;
 }
 
 void libDeInit(){
+    //SDL_Image DEINIT
+    IMG_Quit();
     //SDL DEINIT
     SDL_Quit();
 }

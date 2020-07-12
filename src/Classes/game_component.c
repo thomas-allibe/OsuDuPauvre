@@ -28,15 +28,10 @@ int GameComponent_ctor(GameComponent * const me, SDL_Renderer *r, SDL_Texture *t
     me->renderer = r;
     me->texture = t;
 
-    //Set width & height into position attribute
-    if(SDL_QueryTexture(me->texture, NULL, NULL,
-                                     &me->position.w, &me->position.h) != 0){
-        #if GC_ERR_PRINT
-        fprintf(stderr, "Erreur SDL_QuerryTexture : %s", SDL_GetError());
-        #endif
+    if(GameComponent_set_default_WH(me) != 0){
         return -1;
     }
-    
+
     return 0;
 }
 
@@ -78,15 +73,52 @@ int GameComponent_renderCopy(GameComponent * const me){
 
 /*-------------------------------------------------------------------------*/
 /**
+  @brief    Set width & height according to original
+  @param    me     pointer to GameComponent
+  @return   0 if succeeded, less than 0 if failed
+
+ */
+/*--------------------------------------------------------------------------*/
+int GameComponent_set_default_WH(GameComponent *me){
+    if(SDL_QueryTexture(me->texture, NULL, NULL,
+                                &me->position.w, &me->position.h) != 0){
+        #if GC_ERR_PRINT
+        fprintf(stderr, "Erreur SDL_QuerryTexture : %s", SDL_GetError());
+        #endif
+
+        me->position.w = 0;
+        me->position.h = 0;
+
+        return -1;
+    }
+}
+
+/*-------------------------------------------------------------------------*/
+/**
   @brief    Set new x & y position
   @param    me     pointer to GameComponent
-  @param    x      x position int pixels
-  @param    y      y position int pixels
+  @param    x      x position in pixels
+  @param    y      y position in pixels
   @return   void
 
  */
 /*--------------------------------------------------------------------------*/
-void GameComponent_setXY(GameComponent *me, int x, int y){
+void GameComponent_set_XY(GameComponent *me, int x, int y){
     me->position.x = x;
     me->position.y = y;
+}
+
+/*-------------------------------------------------------------------------*/
+/**
+  @brief    Set new width & height
+  @param    me     pointer to GameComponent
+  @param    w      width in pixels
+  @param    h      height in pixels
+  @return   void
+
+ */
+/*--------------------------------------------------------------------------*/
+void GameComponent_set_WH(GameComponent *me, int w, int h){
+    me->position.w = w;
+    me->position.h = h;
 }

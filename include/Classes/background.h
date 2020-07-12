@@ -4,6 +4,7 @@
 #define BG_ERR_PRINT 0 //0: no fprintf of SDL_GetError()
 
 #include "SDL2/SDL.h"
+#include "mySDL2_tools.h"
 #include "Classes/game_component.h" //Superclass
 
 /****************************************************************************
