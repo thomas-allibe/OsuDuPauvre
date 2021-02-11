@@ -104,6 +104,9 @@ int main(int argc, char *argv[]){
             
 //### UPDATE OBJECTS
             case UpdateObjects:
+                //GameBoard_processEvent(&gb, &user_input);
+                //GameBoard_forward(&gb);
+
                 fprintf(stderr, "x= %4d, y= %4d, h1= %1d:%1d, h2= %1d:%1d\r",
                         user_input.mouse_x, user_input.mouse_y,
                         user_input.hit1, user_input.hit1_r,

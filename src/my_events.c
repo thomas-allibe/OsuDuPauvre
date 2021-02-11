@@ -49,8 +49,8 @@ State getUserEvent(Input *usr_input){
             //escape
             if(event.key.keysym.sym == SDLK_ESCAPE){
                 // Temporary, waiting for pause menu
-                usr_input->quit = SDL_TRUE;
-                next_state = Quit;
+                usr_input->pause = SDL_TRUE;
+                next_state = UpdateObjects;
                 break; //Doesn't need to get remaining events
             }
         }//End Key Down

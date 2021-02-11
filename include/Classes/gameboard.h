@@ -28,7 +28,14 @@ typedef struct{
     int health;
     Uint32 score;
     Uint16 combo;
+    //Game
+    GBState GameState;
 }GameBoard;
+
+typedef enum{
+	Pause,
+	Running
+}GBState;
 
 typedef struct{
     int type;

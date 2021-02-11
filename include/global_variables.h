@@ -23,6 +23,7 @@ typedef struct{
     SDL_bool hit1_r; //repeat
     SDL_bool hit2;
     SDL_bool hit2_r; //repeat
+    SDL_bool pause;
 }Input;
 
 //Global enum

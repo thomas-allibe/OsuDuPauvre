@@ -32,11 +32,12 @@ int GameBoard_ctor(GameBoard * const me, SDL_Renderer *r, SDL_Texture *t){
 
     me->nb_items = 0;
 
-
-
     //Player
     me->score = 0;
     me->combo = 0;
+
+    //Game
+    me->GameState = Pause;
     
 }
 
@@ -75,14 +76,23 @@ void GameBoard_dtor(GameBoard * const me){
 int GameBoard_processEvent(GameBoard * const me, Input *user_input){
     //Hit processing
     if(user_input->hit1 == 1 || user_input->hit2 == 1){
-        //Check for item
-        if(me->nb_items > 0){
-            if(me->items[me->next_item_index].type == 1){
-                
-            }
+        switch(me->GameState){
+            case Pause:
+                me->GameState = Running;
+                break;
+
+            case Running:
+                //Check for item
+                if(me->nb_items > 0){
+                    if(me->items[me->next_item_index].type == 1){
+                        
+                    }
+                }
+                //Check for menu
+                    //No menu for now
+                break;
+            default:;
         }
-        //Check for menu
-            //No menu for now
     }
 
     return 0;
