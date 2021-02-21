@@ -1,53 +1,60 @@
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
 
-#define BG_ERR_PRINT 0 //0: no fprintf of SDL_GetError()
-
+#include <stdlib.h>
 #include "SDL2/SDL.h"
 #include "mySDL2_tools.h"
-#include "Classes/game_component.h" //Superclass
 
 /****************************************************************************
  *    PUBLIC TYPES
  ***************************************************************************/
-//GameWindow Attributes
+//Background Attributes
 typedef struct{
-    GameComponent super; //Super class attributes
-    //For now, only super class
+    SDL_Texture *texture;
+    SDL_Renderer *renderer;
 }Background;
 
 /****************************************************************************
  *    CONSTRUCTOR, DESTRUCTOR
  ***************************************************************************/
 
-/* Constructor implementation */
-/*-------------------------------------------------------------------------*/
 /**
-  @brief    Create an instance of Background class
-  @param    me     pointer for the new Background
+  @brief    Create an instance of Background class, using img for texture
   @param    r      pointer to the renderer
   @param    path   path to the texutre file
-  @return   0 if succeeded, less than 0 if failed.
-
+  @return   Pointer to the GameWindow instance. NULL if failed.
+			Use BackGround_dtor to destroy it.
  */
-/*--------------------------------------------------------------------------*/
-int Background_ctor(Background * const me, SDL_Renderer *r, const char *path);
+Background* Background_ctor_file(SDL_Renderer *r, const char *path);
 
-//Destructor prototype
-/*-------------------------------------------------------------------------*/
+/**
+  @brief    Create an instance of Background class, using a w*h filled rectangle for texture
+  @param    r   pointer to the renderer
+  @param	pf	pointer to SDL_PixelFormat
+  @param    c   color to fill the texture with
+  @param    w   width of background texture
+  @param    h   height of background texture
+  @return   Pointer to the GameWindow instance. NULL if failed.
+			Use BackGround_dtor to destroy it.
+ */
+Background* Background_ctor_color(SDL_Renderer *r, SDL_PixelFormat *pf, SDL_Color c, size_t w, size_t h);
+
 /**
   @brief    Destroy a Background instance
   @param    me     pointer to the Background to free
   @return   void
-
-    Detect if it's a source GC
  */
-/*--------------------------------------------------------------------------*/
-void Background_dtor(Background * const me);
+void Background_dtor(Background *me);
 
 /****************************************************************************
  *    PUBLIC METHODS
  ***************************************************************************/
 
+/**
+  @brief    Destroy a Background instance
+  @param	me     pointer to the Background to free
+  @return	void
+ */
+int Background_draw(const Background *me);
 
 #endif /* BACKGROUND_H */

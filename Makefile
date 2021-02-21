@@ -33,15 +33,21 @@ BINDIR = bin
 #Compilation options
 CC = gcc
 CFLAGS = -Wall -std=c11 -pedantic -MMD -MP
-LDFLAGS = -L ./lib -lmingw32 -lSDL2main -lSDL2 -liniparser_so
+LDFLAGS = -L ./lib -lmingw32 -lSDL2main -lSDL2 -liniparser_so -lSDL2_image
 INCFLAGS = -I ./$(INCDIR)
 
 #Files
 #Paths are relative to the Makefile
 EXEC = OsuDuPauvre
 SRC = src/main.c
-SRC += src/initialize_functions.c src/ini_settings.c src/my_events.c
+SRC += src/mySDL2_tools.c
+#SRC += src/initialize_functions.c
+SRC += src/ini_settings.c
+SRC += src/my_events.c
 SRC += src/Classes/game_window.c
+SRC += src/Classes/gameboard.c
+SRC += src/Classes/background.c
+SRC += src/Classes/circle.c
 # SRC = $(wildcard *.c) can be used instead of manual completion
 
 ######################### DO NOT MODIFY #########################

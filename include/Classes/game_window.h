@@ -4,6 +4,7 @@
 #define GW_ERR_PRINT 0  //0: no fprintf of SDL_GetError()
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <SDL2/SDL.h>
 
 //GameWindow Attributes
@@ -29,34 +30,28 @@ typedef struct{
  *    CONSTRUCTOR, DESTRUCTOR
  ***************************************************************************/
 
-//Constructor prototype
-/*-------------------------------------------------------------------------*/
 /**
   @brief    Create an instance of GameWindow class
-  @param    me     pointer for the new GameWindow
   @param    w_op   struct for window settings  
   @param    r_op   struct for renderer settings  
-  @return   0 if succeeded, less than 0 if failed.
+  @return   Pointer to the GameWindow instance. NULL if failed.
+            Use GameWindow_dtor to destroy it.
 
  */
-/*--------------------------------------------------------------------------*/
-int GameWindow_ctor(GameWindow * const me, WindowOptions *w_op, RendererOptions *r_op);
-//Destructor prototype
-/*-------------------------------------------------------------------------*/
+GameWindow* GameWindow_ctor(WindowOptions *w_op, RendererOptions *r_op);
+
 /**
   @brief    Destroy a GameWindow instance
   @param    me     pointer to the GameWindow to free
   @return   void
 
  */
-/*--------------------------------------------------------------------------*/
-void GameWindow_dtor(GameWindow * const me);
+void GameWindow_dtor(GameWindow *me);
 
 /****************************************************************************
  *    PUBLIC METHODS
  ***************************************************************************/
 
-/*-------------------------------------------------------------------------*/
 /**
   @brief    Change the icon of the GameWindow instance
   @param    me     pointer to the GameWindow
@@ -64,7 +59,6 @@ void GameWindow_dtor(GameWindow * const me);
   @return   0 if succeeded, if failed
 
  */
-/*--------------------------------------------------------------------------*/
-int GameWindow_setIcon(GameWindow * const me, const char *path);
+int GameWindow_setIcon(GameWindow *me, const char *path);
 
 #endif /* GAME_WINDOW_H */

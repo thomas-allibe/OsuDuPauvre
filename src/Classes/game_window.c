@@ -3,85 +3,77 @@
 /****************************************************************************
  *    CONSTRUCTOR, DESTRUCTOR
  ***************************************************************************/
-/* Constructor implementation */
-/*-------------------------------------------------------------------------*/
-/**
-  @brief    Create an instance of GameWindow class
-  @param    me     pointer for the new GameWindow
-  @param    w_op   struct for window settings  
-  @param    r_op   struct for renderer settings  
-  @return   0 if succeeded, less than 0 if failed.
+GameWindow* GameWindow_ctor(WindowOptions *w_op, RendererOptions *r_op){
 
- */
-/*--------------------------------------------------------------------------*/
-int GameWindow_ctor(GameWindow * const me, WindowOptions *w_op, RendererOptions *r_op){
-    //Be sure pointers are equal to NULL
+/* ---------------------------- Memory Allocation --------------------------- */
+    
+    GameWindow *me = NULL;
+    me = (GameWindow*) malloc(sizeof(GameWindow));
+    if(me == NULL){
+        SDL_SetError("Erreur malloc : GameWindow_ctor()");
+        return NULL;
+    }
+
+/* -------------------------------- Set NULL -------------------------------- */
+
     me->window = NULL;
     me->renderer = NULL;
 
-//### Create Windows
+/* ----------------------------- Create Windows ----------------------------- */
+    
+    // fprintf(stdout, "W_O:\n%s\n%d, %d\n%d, %d\n%d\n",
+    //                 w_op->title, w_op->x, w_op->y, w_op->w, w_op->h, w_op->flags);
 
     me->window = SDL_CreateWindow(w_op->title, w_op->x, w_op->y,
                                             w_op->w, w_op->h,
                                             w_op->flags);
+
     if(me->window == NULL){
-        #if GW_ERR_PRINT
-        fprintf(stderr, "Error SDL_CreateWindow : %s", SDL_GetError());
-        #endif
-        return -1;
+        GameWindow_dtor(me);
+        return NULL;
     }
     
-//### Create Renderer
+/* ----------------------------- Create Renderer ---------------------------- */
 
     me->renderer = SDL_CreateRenderer(me->window, r_op->index, r_op->flags);
     if(me->renderer == NULL){
-        //Destroy the window
-        SDL_DestroyWindow(me->window); me->window = NULL;
-        #if GW_ERR_PRINT
-        fprintf(stderr, "Error SDL_CreateRenderer : %s", SDL_GetError());
-        #endif
-        return -1;
+        GameWindow_dtor(me);
+        return NULL;
+    }
+    if(SDL_RenderClear(me->renderer)){
+        GameWindow_dtor(me);
+        return NULL;
+    }
+    if(SDL_SetRenderDrawBlendMode(me->renderer, SDL_BLENDMODE_NONE)){
+        GameWindow_dtor(me);
+        return NULL;
     }
 
-    return 0;
+    return me;
 }
 
-/* Destructor implementation */
-/*-------------------------------------------------------------------------*/
-/**
-  @brief    Destroy a GameWindow instance
-  @param    me     pointer to the GameWindow to free
-  @return   void
-
- */
-/*--------------------------------------------------------------------------*/
-void GameWindow_dtor(GameWindow * const me){
-    SDL_DestroyRenderer(me->renderer);
+void GameWindow_dtor(GameWindow *me){
+    if(me->renderer != NULL){
+        SDL_DestroyRenderer(me->renderer);
         me->renderer = NULL;
-    SDL_DestroyWindow(me->window);
+    }
+    if(me->window != NULL){
+        SDL_DestroyWindow(me->window);
         me->window = NULL;
+    }
+    if(me != NULL)
+        free(me);
 }
 
 /****************************************************************************
  *    PUBLIC METHODS
  ***************************************************************************/
-/*-------------------------------------------------------------------------*/
-/**
-  @brief    Change the icon of the GameWindow instance
-  @param    me     pointer to the GameWindow
-  @param    path   path to the icon
-  @return   0 if succeeded, if failed
 
- */
-/*--------------------------------------------------------------------------*/
-int GameWindow_setIcon(GameWindow * const me, const char *path){
+int GameWindow_setIcon(GameWindow *me, const char *path){
     SDL_Surface *surface = NULL;
 
     surface = SDL_LoadBMP(path);
     if(surface == NULL){
-        #if GW_ERR_PRINT
-        fprintf(stderr, "Erreur SDL_LoadBMP : %s", SDL_GetError());
-        #endif
         return -1;
     }
 

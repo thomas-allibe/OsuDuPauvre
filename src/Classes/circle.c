@@ -4,56 +4,50 @@
 /****************************************************************************
  *    CONSTRUCTOR, DESTRUCTOR
  ***************************************************************************/
-//Constructor prototypes
-/*-------------------------------------------------------------------------*/
-/**
-  @brief    Create an instance of Circle class
-  @param    me     pointer for the new Circle
-  @param    r      pointer to the renderer
-  @param    t      pointer to the texture for this class
-  @return   0 if succeeded, less than 0 if failed.
+Circle* Circle_ctor(SDL_Renderer *r, Circle_Textures *ct, int radius, SDL_Rect *pos){
 
- */
-/*--------------------------------------------------------------------------*/
-int Circle_ctor(Circle * const me, SDL_Renderer *r, SDL_Texture *t, int radius){
-    //SuperClass Constructor
-    if(GameComponent_ctor(&me->super, r, t) != 0){
-        return -1;
+/* ---------------------------- Memory Allocation --------------------------- */
+    
+    Circle *me = NULL;
+    me = (Circle*) malloc(sizeof(Circle));
+    if(me == NULL){
+        SDL_SetError("Erreur malloc : Circle_ctor()");
+        return NULL;
     }
+    
+    me->renderer = r;
+    me->textures = ct;
+    me->rect_pos = *pos;
+    me->radius = radius;
+    me->creation_time = SDL_GetTicks();
+    me->remaining_time = 500;
+    me->x_center = pos->x + pos->w/2;
+    me->y_center = pos->y + pos->h/2;
 
-    //Subclass constructor
-    me->x_center = me->super.position.w / 2;
-    me->y_center = me->super.position.h / 2;
-
-    return 0;
+    return me;
 }
 
-//Destructor prototype
-/*-------------------------------------------------------------------------*/
-/**
-  @brief    Destroy a Circle instance
-  @param    me     pointer to the Circle to free
-  @return   void
-
- */
-/*--------------------------------------------------------------------------*/
-void Circle_dtor(Circle * const me){
-    //SuperClass Destructor
-    GameComponent_dtor(&me->super);
+void Circle_dtor(Circle *me){
+    if(me != NULL)
+        free(me);
 }
 
 /****************************************************************************
  *    PUBLIC METHODS
  ***************************************************************************/
+int Circle_is_pos_on_circle(Circle *me, int x, int y){
+    float distance = sqrt((x-me->x_center)*(x-me->x_center)
+                        +(y-me->y_center)*(y-me->y_center));
+    return (distance <= me->radius)?1:0;
+}
 
-/*-------------------------------------------------------------------------*/
-/**
-  @brief    Return whether or not the click is on the circle
-  @param    me     pointer to the Circle
-  @param    x     x position of the mouse
-  @param    y     y position of the mouse
-  @return   return 1 if the mouse is on the circle, else return 0
-
- */
-/*--------------------------------------------------------------------------*/
-int Circle_is_click_on_circle(Circle * const me, int x, int y);
+int Circle_draw(Circle *me){
+    if(SDL_RenderCopy(me->renderer, me->textures->circle, NULL, &(me->rect_pos)) != 0){
+        return -1;
+    }
+    if(SDL_RenderCopy(me->renderer, me->textures->overlay, NULL, &(me->rect_pos))){
+        return -1;
+    }
+    return SDL_RenderCopy(me->renderer, me->textures->approach, NULL, &(me->rect_pos));
+    // return 0;
+}

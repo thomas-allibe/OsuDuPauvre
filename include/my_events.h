@@ -6,6 +6,17 @@
 #include "global_variables.h"
 
 
+typedef struct{
+    Sint32 mouse_x;
+    Sint32 mouse_y;
+    SDL_bool quit;
+    SDL_bool hit1;
+    SDL_bool hit1_r; //repeat
+    SDL_bool hit2;
+    SDL_bool hit2_r; //repeat
+    SDL_bool pause;
+}Input;
+
 /*-------------------------------------------------------------------------*/
 /**
   @brief    get event from user
@@ -14,6 +25,6 @@
 
  */
 /*--------------------------------------------------------------------------*/
-State getUserEvent(Input *usr_input);
+void getUserEvent(Input *usr_input);
 
 #endif /* MY_EVENTS_H */

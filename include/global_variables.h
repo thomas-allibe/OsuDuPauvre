@@ -3,7 +3,12 @@
 
 #include <SDL2/SDL.h>
 
-//Global struct
+/* ------------------------------ Global Define ----------------------------- */
+
+#define MS_PER_UPDATE 16
+
+/* ------------------------------ Global Struct ----------------------------- */
+
 typedef struct{
     //If you add parameters,
     //add them in initialize_functions.h #define section
@@ -15,18 +20,8 @@ typedef struct{
     SDL_Keycode controls_hit2;
 }Settings;
 
-typedef struct{
-    Sint32 mouse_x;
-    Sint32 mouse_y;
-    SDL_bool quit;
-    SDL_bool hit1;
-    SDL_bool hit1_r; //repeat
-    SDL_bool hit2;
-    SDL_bool hit2_r; //repeat
-    SDL_bool pause;
-}Input;
+/* ------------------------------- Global enum ------------------------------ */
 
-//Global enum
 typedef enum {
 /* 0 */ Initialize,
 /* 1 */ GetUserEvent,
@@ -39,7 +34,8 @@ typedef enum {
 }State;
 
 
-//Global variables (GV)
+/* -------------------------- Global variables (GV) ------------------------- */
+
 extern const char *GAME_TITLE;
 extern Settings GAME_SETTINGS;
 

@@ -13,14 +13,14 @@
 /* Custom includes */
 #include "global_variables.h"
 #include "ini_settings.h"
-#include "initialize_functions.h"
+// #include "initialize_functions.h"
 #include "my_events.h"
 #include "iniparser/iniparser.h"
 #include "Classes/game_window.h"
 #include "Classes/gameboard.h"
+#include "Classes/background.h"
 /*
 #include "Classes/game_component.h"
-#include "Classes/background.h"
 #include "Classes/circle.h"
 */
 /*======================================================================================*/
@@ -28,7 +28,6 @@
 /*======================================================================================*/
 
 //Typedef
-
 
 //Functions
 int libInit();
@@ -42,124 +41,121 @@ Settings GAME_SETTINGS; //Values are set in initialize_functions.c
 /*#										   MAIN        								   #*/
 /*######################################################################################*/
 int main(int argc, char *argv[]){
-/*---------------------------------------Variables--------------------------------------*/
-    State state_machine = Initialize;
-    Input user_input;
-        user_input.quit = SDL_FALSE;
-        user_input.hit1 = SDL_FALSE;
-        user_input.hit1_r = SDL_FALSE;
-        user_input.hit2 = SDL_FALSE;
-        user_input.hit2_r = SDL_FALSE;
-        user_input.mouse_x = 0;
-        user_input.mouse_y = 0;
-    
+
+/* -------------------------------- Variables ------------------------------- */
+
+    Input user_input = {0, 0, SDL_FALSE, SDL_FALSE, SDL_FALSE, SDL_FALSE, SDL_FALSE, SDL_FALSE};
     int statut = EXIT_SUCCESS;
+    Uint32 t_current;
+    Uint32 t_previous;
+    Uint32 t_lag = 0;
+    Uint32 t_elapsed;
 
     //Classes
-    GameWindow gw = {NULL, NULL};
-    GameBoard gb;
+    GameWindow *gw = NULL;
+        //Settings
+        WindowOptions *wo = malloc(sizeof(WindowOptions));
+        wo->title = GAME_TITLE;
+        wo->x = SDL_WINDOWPOS_CENTERED; wo->y = SDL_WINDOWPOS_CENTERED;
+        wo->flags = SDL_WINDOW_SHOWN;
 
-/*------------------------------------Verif Arguments-----------------------------------*/
-    Uint32 delay = 2000;
-    if(argc > 1){
-	    delay = atoi(argv[1]);
-	}
-
-/*-------------------------------------State Machine------------------------------------*/
-    while(state_machine != Stop){
-        switch(state_machine){
-//### INITIALIZE            
-            case Initialize:
-                fprintf(stderr, "Initialize\n");
-
-                //No error
-                state_machine = Wait;
-                
-                setDefaultSettingsGV();
-
-                if(libInit() != 0){
-                    state_machine = Error;
-                    break;
-                }
-                if(getIniSettings("settings.ini") != 0){
-                    state_machine = Error;
-                    break;
-                }
-                if(createMainWindow(&gw) != 0){
-                    state_machine = Error;
-                    break;
-                }
-                if(GameWindow_setIcon(&gw, "../images/w_ico_1.bmp") != 0){
-                    state_machine = Error;
-                    break;
-                }
-
-                state_machine = GetUserEvent;
-                break;
-            
-//### GET USER EVENT            
-            case GetUserEvent:
-                state_machine = getUserEvent(&user_input);
-                break;
-            
-//### UPDATE OBJECTS
-            case UpdateObjects:
-                //GameBoard_processEvent(&gb, &user_input);
-                //GameBoard_forward(&gb);
-
-                fprintf(stderr, "x= %4d, y= %4d, h1= %1d:%1d, h2= %1d:%1d\r",
-                        user_input.mouse_x, user_input.mouse_y,
-                        user_input.hit1, user_input.hit1_r,
-                        user_input.hit2, user_input.hit2_r);
-                user_input.hit1 = SDL_FALSE;
-                user_input.hit1_r = SDL_FALSE;
-                user_input.hit2 = SDL_FALSE;
-                user_input.hit2_r = SDL_FALSE;
-
-                state_machine = GetUserEvent;
-                break;            
-
-//### RENDER CHANGES
-            case RenderChanges:
-
-
-                break;
-//### WAIT            
-            case Wait:
-                fprintf(stderr, "Wait\n");                
-                
-                SDL_Delay(delay);
-
-                state_machine = Quit;
-                break;
-            
-//### ERROR            
-            case Error:
-                fprintf(stderr, "%s\n", SDL_GetError());
-                
-                statut = EXIT_FAILURE;
-                
-                state_machine = Quit;
-                break;
-            
-//### QUIT            
-            case Quit:
-                fprintf(stderr, "Quit\n");
-                
-                GameWindow_dtor(&gw);
-                libDeInit();
-
-                state_machine = Stop;
-                break;
-            
-//### DEFAULT            
-            default:
-                fprintf(stderr, "Default\n");
-                //Code
-                state_machine = Quit;
-        }//End switch
-    }//End while
+        RendererOptions *ro = malloc(sizeof(RendererOptions));
+        ro->index = -1;
+        ro->flags = SDL_RENDERER_ACCELERATED;
     
+    GameBoard *gb = NULL;
+
+/* ----------------------------- Verif Arguments ---------------------------- */
+
+    // Uint32 delay = 2000;
+    // if(argc > 1){
+	//     delay = atoi(argv[1]);
+	// }
+
+/* ------------------------------ Initalization ----------------------------- */
+    
+    fprintf(stdout, "Start Initialize\n");
+    //No error
+    setDefaultSettingsGV();
+    if(libInit() != 0){
+        statut = EXIT_FAILURE;
+        goto Error;
+    }
+    if(getIniSettings("settings.ini") != 0){
+        statut = EXIT_FAILURE;
+        goto Error;
+    }
+
+    wo->w = GAME_SETTINGS.window_w;
+    wo->h = GAME_SETTINGS.window_h;
+
+    gw = GameWindow_ctor(wo, ro);
+    if(gw == NULL){
+        statut = EXIT_FAILURE;
+        goto Error;
+    }
+    free(wo); wo = NULL;
+    free(ro); ro = NULL;
+
+    if(GameWindow_setIcon(gw, "../images/w_ico_1.bmp") != 0){
+        statut = EXIT_FAILURE;
+        goto Error;
+    }
+    gb = GameBoard_ctor(gw->renderer);
+    if(gb == NULL){
+        statut = EXIT_FAILURE;
+        goto Error;
+    }
+    fprintf(stdout, "End Initialize\n");
+    t_previous = SDL_GetTicks();
+
+/* -------------------------------- Main Loop ------------------------------- */
+
+    while(1){
+    /* ---------------------------------- Time ---------------------------------- */
+
+        t_current = SDL_GetTicks();
+        t_elapsed = t_current - t_previous;
+        t_previous = t_current;
+        t_lag += t_elapsed;
+
+    /* -------------------------------- UserEvent ------------------------------- */
+
+        getUserEvent(&user_input);
+        if(user_input.quit == SDL_TRUE)
+            goto Quit;
+
+    /* ----------------------------- EventProcessing ---------------------------- */
+
+        while(t_lag >= MS_PER_UPDATE){
+            GameBoard_processEvent(gb, &user_input);
+            GameBoard_update(gb);
+            t_lag -= MS_PER_UPDATE;
+        }
+
+    /* --------------------------------- Render --------------------------------- */
+        
+        if(GameBoard_render(gb, t_lag/MS_PER_UPDATE) != 0){
+            statut = EXIT_FAILURE;
+            goto Error;
+        }
+
+    }
+
+/* ---------------------------------- Error --------------------------------- */
+
+Error:
+    fprintf(stderr, "Error:\n%s\n", SDL_GetError());
+
+/* ---------------------------------- Quit ---------------------------------- */
+Quit:
+    fprintf(stderr, "\nQuit\n");
+    // if(gb != NULL)
+        GameBoard_dtor(gb);
+    if(gw != NULL)
+        GameWindow_dtor(gw);
+    libDeInit();
+
     return statut;
 }
 

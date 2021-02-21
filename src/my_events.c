@@ -8,16 +8,14 @@
 
  */
 /*--------------------------------------------------------------------------*/
-State getUserEvent(Input *usr_input){
+void getUserEvent(Input *usr_input){
     SDL_Event event;
-    State next_state = GetUserEvent;
 
     while(SDL_PollEvent(&event)){
     //###  Mouse Motion
         if(event.type == SDL_MOUSEMOTION){
             usr_input->mouse_x = event.motion.x;
             usr_input->mouse_y = event.motion.y;
-            next_state = UpdateObjects;
         }//End Mouse Motion
 
     //###  Key Down
@@ -32,7 +30,6 @@ State getUserEvent(Input *usr_input){
                 else{
                     usr_input->hit1_r = SDL_TRUE;
                 }
-                next_state = UpdateObjects;
             }
             //hit2
             if(event.key.keysym.sym == GAME_SETTINGS.controls_hit2){
@@ -44,13 +41,11 @@ State getUserEvent(Input *usr_input){
                 else{
                     usr_input->hit2_r = SDL_TRUE;
                 }
-                next_state = UpdateObjects;
             }
             //escape
             if(event.key.keysym.sym == SDLK_ESCAPE){
                 // Temporary, waiting for pause menu
                 usr_input->pause = SDL_TRUE;
-                next_state = UpdateObjects;
                 break; //Doesn't need to get remaining events
             }
         }//End Key Down
@@ -58,16 +53,12 @@ State getUserEvent(Input *usr_input){
     //###  Mouse Button Down
         if(event.type == SDL_MOUSEBUTTONDOWN){
             usr_input->hit1 = SDL_TRUE;
-            next_state = UpdateObjects;
         }//End Mouse Button Down
         
     //###  Quit
         if(event.type == SDL_QUIT){
             usr_input->quit = SDL_TRUE;
-            next_state = Quit;
             break; //Doesn't need to get remaining events
         }
     }//End While
-
-    return next_state;
 }

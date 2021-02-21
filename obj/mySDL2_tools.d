@@ -1,6 +1,5 @@
-obj/initialize_functions.o: src/initialize_functions.c \
- include/initialize_functions.h include/SDL2/SDL.h \
- include/SDL2/SDL_main.h include/SDL2/SDL_stdinc.h \
+obj/mySDL2_tools.o: src/mySDL2_tools.c include/mySDL2_tools.h \
+ include/SDL2/SDL.h include/SDL2/SDL_main.h include/SDL2/SDL_stdinc.h \
  include/SDL2/SDL_config.h include/SDL2/SDL_platform.h \
  include/SDL2/begin_code.h include/SDL2/close_code.h \
  include/SDL2/SDL_assert.h include/SDL2/SDL_atomic.h \
@@ -22,9 +21,9 @@ obj/initialize_functions.o: src/initialize_functions.c \
  include/SDL2/SDL_render.h include/SDL2/SDL_sensor.h \
  include/SDL2/SDL_shape.h include/SDL2/SDL_system.h \
  include/SDL2/SDL_timer.h include/SDL2/SDL_version.h \
- include/global_variables.h include/Classes/game_window.h
+ include/SDL2/SDL_image.h include/SDL2/SDL.h
 
-include/initialize_functions.h:
+include/mySDL2_tools.h:
 
 include/SDL2/SDL.h:
 
@@ -116,6 +115,6 @@ include/SDL2/SDL_timer.h:
 
 include/SDL2/SDL_version.h:
 
-include/global_variables.h:
+include/SDL2/SDL_image.h:
 
-include/Classes/game_window.h:
+include/SDL2/SDL.h:
