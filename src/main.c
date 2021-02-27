@@ -121,15 +121,15 @@ int main(int argc, char *argv[]){
 
     /* -------------------------------- UserEvent ------------------------------- */
 
-        getUserEvent(&user_input);
+        GetUserEvent(&user_input);
         if(user_input.quit == SDL_TRUE)
             goto Quit;
+        GameBoard_processEvent(gb, &user_input);
 
     /* ----------------------------- EventProcessing ---------------------------- */
 
         while(t_lag >= MS_PER_UPDATE){
-            GameBoard_processEvent(gb, &user_input);
-            GameBoard_update(gb);
+            GameBoard_update(gb, MS_PER_UPDATE);
             t_lag -= MS_PER_UPDATE;
         }
 

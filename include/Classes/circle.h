@@ -5,8 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-#define APP_CIRCLE_SIZE_FACTOR 3
+#include "global_variables.h"
 
 typedef struct{
 	SDL_Texture *circle;
@@ -21,9 +20,14 @@ typedef struct{
 typedef struct{
     SDL_Renderer *renderer;
 	const Circle_Textures *textures;
-    SDL_Rect rect_pos;
-    Uint32 creation_time;
-    Uint32 remaining_time;
+    SDL_Rect pos; //Circle position
+	SDL_Rect ac_pos; //Approach circle position
+	int ac_w_start;
+	int ac_w_end;
+	int ac_h_start;
+	int ac_h_end;
+    int duration;
+    int time_left; //Needs to be signed
     int x_center;
     int y_center;
     int radius;
@@ -56,6 +60,21 @@ void Circle_dtor(Circle *me);
  ***************************************************************************/
 
 /**
+  @brief	Update object acording to elapsed time
+  @param	me	pointer to Circle instance
+  @param	dt	elapsed time
+  @return	0 on succes, -1 on error
+ */
+void Circle_update(Circle *me, int dt);
+
+/**
+  @brief	Draw the circle texture on renderer linked in ctor.
+  @param	me	pointer to the Circle.
+  @return	0 if succeded, -1 if failed.
+ */
+int Circle_draw(Circle *me, double prediction);
+
+/**
   @brief    Return whether or not the click is on the circle
   @param    me     pointer to the Circle
   @param    x     x position of the mouse
@@ -65,10 +84,10 @@ void Circle_dtor(Circle *me);
 int Circle_is_pos_on_circle(Circle *me, int x, int y);
 
 /**
-  @brief	Draw the circle texture on renderer linked in ctor.
-  @param	me	pointer to the Circle.
-  @return	0 if succeded, -1 if failed.
+  @brief	Check if circle has time left
+  @param	me	pointer to circle
+  @return	0 if it has, 1 if it hasn't
  */
-int Circle_draw(Circle *me);
+int Circle_no_time_left(Circle *me);
 
 #endif /* CIRCLE_H */

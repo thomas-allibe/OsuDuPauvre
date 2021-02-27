@@ -20,7 +20,8 @@ obj/Classes/circle.o: src/Classes/circle.c include/Classes/circle.h \
  include/SDL2/SDL_messagebox.h include/SDL2/SDL_power.h \
  include/SDL2/SDL_render.h include/SDL2/SDL_sensor.h \
  include/SDL2/SDL_shape.h include/SDL2/SDL_system.h \
- include/SDL2/SDL_timer.h include/SDL2/SDL_version.h
+ include/SDL2/SDL_timer.h include/SDL2/SDL_version.h \
+ include/global_variables.h
 
 include/Classes/circle.h:
 
@@ -113,3 +114,5 @@ include/SDL2/SDL_system.h:
 include/SDL2/SDL_timer.h:
 
 include/SDL2/SDL_version.h:
+
+include/global_variables.h:

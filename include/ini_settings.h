@@ -11,12 +11,11 @@
 #define KEY_MAX_LENGHT 20
 #define VALUE_MAX_LENGHT 10
 //Default ini file with default settings
-#define NB_SECTIONS 3
-  #define SETTING_SECTIONS "window", "sounds", "controls"
-#define NB_KEYS 5
-  #define SETTING_KEYS "window:width", "window:height", \
-    "controls:hit1", "controls:hit2", "controls:restart"
-//  #define SETTING_VALUES "1280", "720" //Replaced by GAME_SETTINGS GV
+#define NB_SECTIONS 4
+	#define SETTING_SECTIONS "window", "sounds", "controls", "game"
+#define NB_KEYS 7
+	#define SETTING_KEYS "window:width", "window:height", "controls:hit1", \
+    "controls:hit2", "controls:restart", "controls:pause", "game:ar"
 
 //Limit setting values
 #define MIN_WIDTH 848

@@ -18,20 +18,13 @@ typedef struct{
 //Controls section
     SDL_Keycode controls_hit1;
     SDL_Keycode controls_hit2;
+    SDL_Keycode controls_restart;
+    SDL_Keycode controls_pause;
+//Game
+    Uint8 game_AR;
 }Settings;
 
 /* ------------------------------- Global enum ------------------------------ */
-
-typedef enum {
-/* 0 */ Initialize,
-/* 1 */ GetUserEvent,
-/* 2 */ Wait,
-/* 3 */ UpdateObjects,
-/* 4 */ RenderChanges,
-/* 5 */ Error,
-/* 6 */ Quit,
-/* 7 */ Stop
-}State;
 
 
 /* -------------------------- Global variables (GV) ------------------------- */

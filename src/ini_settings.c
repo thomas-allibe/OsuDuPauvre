@@ -14,6 +14,10 @@ void setDefaultSettingsGV(){
 //Controls 
     GAME_SETTINGS.controls_hit1 = SDLK_w;
     GAME_SETTINGS.controls_hit2 = SDLK_x;
+    GAME_SETTINGS.controls_restart = SDLK_q;
+    GAME_SETTINGS.controls_pause = SDLK_p;
+//Game
+    GAME_SETTINGS.game_AR = 9;
 }
 
 
@@ -26,6 +30,7 @@ void setDefaultSettingsGV(){
  */
 /*--------------------------------------------------------------------------*/
 int getIniSettings(char *ini_path){
+
 /*---------------------------------Variables--------------------------------*/
     dictionary *settings = NULL;
     FILE *ini_file = NULL;
@@ -47,14 +52,18 @@ int getIniSettings(char *ini_path){
         sprintf(setting_values[1], "%d", GAME_SETTINGS.window_h);
         sprintf(setting_values[2], "%c", GAME_SETTINGS.controls_hit1);
         sprintf(setting_values[3], "%c", GAME_SETTINGS.controls_hit2);
+        sprintf(setting_values[4], "%c", GAME_SETTINGS.controls_restart);
+        sprintf(setting_values[5], "%c", GAME_SETTINGS.controls_pause);
+        sprintf(setting_values[6], "%d", GAME_SETTINGS.game_AR);
     // WARNING
     // The else case (of settings == NULL) uses these arrays content individualy
     // If they are modified, the code below has to be modified
     
-/*------------------------------------Core----------------------------------*/
+/* ---------------------------- Open Config File ---------------------------- */
+
     settings = iniparser_load(ini_path);
     if(settings == NULL){
-        //The file doesn't exist, create it
+    //The file doesn't exist, create it
         fprintf(stderr, "%s non ouvert\n", ini_path);
         ini_file = fopen(ini_path, "w+");
         if(ini_file == NULL){
@@ -63,7 +72,7 @@ int getIniSettings(char *ini_path){
             return -1;
         }
 
-        //Re-load the file to get an empty ini dictionary
+    //Re-load the file to get an empty ini dictionary
         settings = iniparser_load(ini_path);
         if(settings == NULL){
             //Can't open Settings.ini
@@ -71,7 +80,7 @@ int getIniSettings(char *ini_path){
             return -2;
         }
 
-        //Fill the dictionary with default settings
+    //Fill the dictionary with default settings
             //All sections
         for(int i=0 ; i<NB_SECTIONS ; i++){
             iniparser_set(settings, setting_sections[i], NULL);
@@ -81,7 +90,7 @@ int getIniSettings(char *ini_path){
             iniparser_set(settings, setting_keys[i], setting_values[i]);
         }
 
-        //Dump  the dictionary into the ini file
+    //Dump  the dictionary into the ini file
         iniparser_dump_ini(settings, ini_file);
 
         fclose(ini_file);
@@ -90,7 +99,7 @@ int getIniSettings(char *ini_path){
         //The file exists, check the value of each keys
         //If the value isn't valid, use the default one
         
-        //Check sections presence
+    //Check sections presence
         for(int i=0 ; i<NB_SECTIONS ; i++){
             if(iniparser_find_entry(settings, setting_sections[i]) == 0){
                 //The key dosen't exist, create it with default values
@@ -100,15 +109,16 @@ int getIniSettings(char *ini_path){
             }
         }
         
-        //Get display informations
+    //Get display informations
         if(SDL_GetDisplayUsableBounds(0, &bounds) != 0){
             //Non critical error, use default instead
             bounds.w = MAX_WIDTH;
             bounds.h = MAX_HIGHT;
         }
         
-//### Window section
-        //### Window Width / key = "window:width" ###
+/* ----------------------------- Window section ----------------------------- */
+
+    //### Window Width / key = "window:width" ###
         tmp_int = iniparser_getint(settings, setting_keys[0], -1);
         if( _valid_int(tmp_int, MIN_WIDTH, bounds.w) ){
             GAME_SETTINGS.window_w = tmp_int;
@@ -121,7 +131,7 @@ int getIniSettings(char *ini_path){
         }
         
 
-        //### Window Hight / key = "window:hight" ###
+    //### Window Hight / key = "window:hight" ###
         tmp_int = iniparser_getint(settings, setting_keys[1], -1);
         if( _valid_int(tmp_int, MIN_HIGHT, bounds.h) ){
             GAME_SETTINGS.window_h = tmp_int;
@@ -131,8 +141,9 @@ int getIniSettings(char *ini_path){
             flag_new_key = 1;
         }
 
-//### Controls section
-        //### Controls Hit1 / key = "controls:hit1" ###    
+/* ---------------------------- Controls section ---------------------------- */
+
+    //### Controls Hit1 / key = "controls:hit1" ###    
         if((tmp_char = iniparser_getstring(settings, setting_keys[2], NULL)) != NULL){    
             if( _valid_char(*tmp_char) ){
                 GAME_SETTINGS.controls_hit1 = (SDL_Keycode) tolower(*tmp_char);
@@ -143,7 +154,7 @@ int getIniSettings(char *ini_path){
             flag_new_key = 1;
         }
 
-        //### Controls Hit2 / key = "controls:hit2" ###
+    //### Controls Hit2 / key = "controls:hit2" ###
         if((tmp_char = iniparser_getstring(settings, setting_keys[3], NULL)) != NULL){    
             if( _valid_char(*tmp_char) ){
                 GAME_SETTINGS.controls_hit2 = (SDL_Keycode) tolower(*tmp_char);
@@ -151,6 +162,35 @@ int getIniSettings(char *ini_path){
         }
         else{
             iniparser_set(settings, setting_keys[3], setting_values[3]);
+            flag_new_key = 1;
+        }
+    //### Controls Restart / key = "controls:restart" ###
+        if((tmp_char = iniparser_getstring(settings, setting_keys[4], NULL)) != NULL){    
+            if( _valid_char(*tmp_char) ){
+                GAME_SETTINGS.controls_restart = (SDL_Keycode) tolower(*tmp_char);
+            }
+        }
+        else{
+            iniparser_set(settings, setting_keys[4], setting_values[4]);
+            flag_new_key = 1;
+        }
+    //### Controls Pause / key = "controls:pause" ###
+        if((tmp_char = iniparser_getstring(settings, setting_keys[5], NULL)) != NULL){    
+            if( _valid_char(*tmp_char) ){
+                GAME_SETTINGS.controls_pause = (SDL_Keycode) tolower(*tmp_char);
+            }
+        }
+        else{
+            iniparser_set(settings, setting_keys[5], setting_values[5]);
+            flag_new_key = 1;
+        }
+    //### Game Approach Rate / key = "game:AR" ###
+        tmp_int = iniparser_getint(settings, setting_keys[6], -1);
+        if( _valid_int(tmp_int, 0, 10) ){
+            GAME_SETTINGS.game_AR = tmp_int;
+        }
+        else{
+            iniparser_set(settings, setting_keys[6], setting_values[6]);
             flag_new_key = 1;
         }
 
@@ -165,7 +205,9 @@ int getIniSettings(char *ini_path){
             }
         }
 */
-        //Update ini file
+
+/* ----------------------------- Update ini file ---------------------------- */
+
         if(flag_new_key == 1 || flag_new_section == 1){
             fprintf(stderr, "Ini modifie\n");
             //Dump  the dictionary into the ini file to add modified content

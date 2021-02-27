@@ -1,14 +1,6 @@
 #include "my_events.h"
 
-/*-------------------------------------------------------------------------*/
-/**
-  @brief    get event from user
-  @param    usr_input     struct pointer containing the input to process
-  @return   the next state for the state machine
-
- */
-/*--------------------------------------------------------------------------*/
-void getUserEvent(Input *usr_input){
+void GetUserEvent(Input *usr_input){
     SDL_Event event;
 
     while(SDL_PollEvent(&event)){
@@ -42,9 +34,8 @@ void getUserEvent(Input *usr_input){
                     usr_input->hit2_r = SDL_TRUE;
                 }
             }
-            //escape
-            if(event.key.keysym.sym == SDLK_ESCAPE){
-                // Temporary, waiting for pause menu
+            //Pause
+            if(event.key.keysym.sym == GAME_SETTINGS.controls_pause){
                 usr_input->pause = SDL_TRUE;
                 break; //Doesn't need to get remaining events
             }
@@ -61,4 +52,13 @@ void getUserEvent(Input *usr_input){
             break; //Doesn't need to get remaining events
         }
     }//End While
+}
+
+void ResetUserInput(Input *usr_input){
+    usr_input->quit = SDL_FALSE;
+    usr_input->pause = SDL_FALSE;
+    usr_input->hit1 = SDL_FALSE;
+    usr_input->hit1_r = SDL_FALSE;
+    usr_input->hit2 = SDL_FALSE;
+    usr_input->hit2_r = SDL_FALSE;
 }

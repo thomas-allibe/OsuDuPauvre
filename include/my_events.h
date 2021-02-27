@@ -25,6 +25,13 @@ typedef struct{
 
  */
 /*--------------------------------------------------------------------------*/
-void getUserEvent(Input *usr_input);
+void GetUserEvent(Input *usr_input);
+
+/**
+  @brief	Reset Input struct
+  @param	usr_input	struct pointer containing the input to reset
+  @return	void
+ */
+void ResetUserInput(Input *usr_input);
 
 #endif /* MY_EVENTS_H */
