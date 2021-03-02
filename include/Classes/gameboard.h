@@ -48,8 +48,6 @@ typedef struct{
     ItemList *item_list;
     ItemList *item_list_end;
     SDL_Rect spawn_region;
-    int nb_items;
-    int next_item_index;
     int spawn_time;
     //Player
     int health;
@@ -107,6 +105,20 @@ int GameBoard_update(GameBoard *me, Uint32 dt);
   @return	0 on success, -1 on error
  */
 int GameBoard_render(GameBoard *me, double prediction);
+
+/**
+  @brief	Load game assets (textures, sounds, ...)
+  @param	me  pointer to GameBoard instance
+  @return	0 on success, -1 on error
+ */
+int GameBoard_load_assets(GameBoard *me);
+
+/**
+  @brief	Compute spawn region from window size GV
+  @param	me  pointer to GameBoard instance
+  @return	void
+ */
+void GameBoard_compute_spawn_region(GameBoard *me);
 
 /* -------------------------------------------------------------------------- */
 /*                                ItemsList API                               */

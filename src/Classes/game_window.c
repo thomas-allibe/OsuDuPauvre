@@ -21,9 +21,6 @@ GameWindow* GameWindow_ctor(WindowOptions *w_op, RendererOptions *r_op){
 
 /* ----------------------------- Create Windows ----------------------------- */
     
-    // fprintf(stdout, "W_O:\n%s\n%d, %d\n%d, %d\n%d\n",
-    //                 w_op->title, w_op->x, w_op->y, w_op->w, w_op->h, w_op->flags);
-
     me->window = SDL_CreateWindow(w_op->title, w_op->x, w_op->y,
                                             w_op->w, w_op->h,
                                             w_op->flags);

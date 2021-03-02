@@ -7,10 +7,21 @@
 #include <math.h>
 #include "global_variables.h"
 
+#define EXTRA_LIFE_SPAN 75
+#define SHOW_PTS_DURATION 300
+#define HIT_FLAG_MISS -1
+#define HIT_FLAG_50 1
+#define HIT_FLAG_100 2
+#define HIT_FLAG_300 3
+
 typedef struct{
 	SDL_Texture *circle;
 	SDL_Texture *overlay;
 	SDL_Texture *approach;
+	SDL_Texture *miss;
+	SDL_Texture *_50;
+	SDL_Texture *_100;
+	SDL_Texture *_300;
 }Circle_Textures;
 
 /****************************************************************************
@@ -26,11 +37,13 @@ typedef struct{
 	int ac_w_end;
 	int ac_h_start;
 	int ac_h_end;
-    int duration;
-    int time_left; //Needs to be signed
+    int ac_hit;
+	int fade_in;
+	int life_time;
     int x_center;
     int y_center;
     int radius;
+	Sint8 hit_flag;//HIT_FLAG_MISS,HIT_FLAG_50,HIT_FLAG_100,HIT_FLAG_300
 }Circle;
 
 /****************************************************************************
@@ -84,10 +97,31 @@ int Circle_draw(Circle *me, double prediction);
 int Circle_is_pos_on_circle(Circle *me, int x, int y);
 
 /**
+  @brief	Set hit flag and returns points
+  @param	me	pointer to circle
+  @return	hit points (50 / 100 / 300) or 0 if timing is bad
+ */
+int Circle_set_hit(Circle *me);
+
+/**
   @brief	Check if circle has time left
   @param	me	pointer to circle
   @return	0 if it has, 1 if it hasn't
  */
-int Circle_no_time_left(Circle *me);
+int Circle_has_time_left(Circle *me);
+
+/**
+  @brief	Check if circle has been missed
+  @param	me	pointer to circle
+  @return	1 if it has, 0 if not
+ */
+int Circle_is_missed(Circle *me);
+
+/**
+  @brief	Check if circle needs to be destroyed
+  @param	me	pointer to circle
+  @return	1 if it needs, 0 if it doesn't
+ */
+int Circle_to_destroy(Circle *me);
 
 #endif /* CIRCLE_H */

@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include "global_variables.h"
 
 //GameWindow Attributes
 typedef struct{
@@ -60,5 +61,9 @@ void GameWindow_dtor(GameWindow *me);
 
  */
 int GameWindow_setIcon(GameWindow *me, const char *path);
+
+int GameWindow_setFullscreen(GameWindow *me);
+
+int GameWindow_setWindowed(GameWindow *me);
 
 #endif /* GAME_WINDOW_H */
