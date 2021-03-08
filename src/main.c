@@ -1,7 +1,7 @@
 /*######################################################################################*/
 /*#					                    OsuDuPauvre	                                   #*/
 /*#					                        		                                   #*/
-/*#					                Thomas ALLIBE E2I3                                 #*/
+/*#					                   Thomas ALLIBE                                   #*/
 /*######################################################################################*/
 
 /* Std C includes */
@@ -10,6 +10,8 @@
 /* SDL includes */
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 /* Custom includes */
 #include "global_variables.h"
 #include "ini_settings.h"
@@ -126,7 +128,7 @@ int main(int argc, char *argv[]){
             goto Quit;
         GameBoard_processEvent(gb, &user_input);
 
-    /* ----------------------------- EventProcessing ---------------------------- */
+    /* --------------------------------- Update --------------------------------- */
 
         while(t_lag >= MS_PER_UPDATE){
             GameBoard_update(gb, MS_PER_UPDATE);
@@ -145,12 +147,12 @@ int main(int argc, char *argv[]){
 /* ---------------------------------- Error --------------------------------- */
 
 Error:
-    fprintf(stderr, "Error:\n%s\n", SDL_GetError());
+    fprintf(stderr, "Error:\n%s%s\n", SDL_GetError());
 
 /* ---------------------------------- Quit ---------------------------------- */
 Quit:
     fprintf(stderr, "\nQuit\n");
-    // if(gb != NULL)
+    if(gb != NULL)
         GameBoard_dtor(gb);
     if(gw != NULL)
         GameWindow_dtor(gw);
@@ -166,14 +168,29 @@ Quit:
 /*--------------------------------------------------------------------------------------*/
 int libInit(){
     //SDL INIT
-    if(SDL_Init(SDL_INIT_VIDEO) != 0){
-        fprintf(stderr, "Error SDL_Init : %s", SDL_GetError());
+    if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_EVENTS|SDL_INIT_TIMER)){
+        // fprintf(stderr, "Error SDL_Init : %s", SDL_GetError());
         return -1;
     }
 
     //SDL_Image INIT
-    if(IMG_Init(IMG_INIT_PNG) == 0){
-        fprintf(stderr, "Error IMG_Init : %s", SDL_GetError());
+    if(!IMG_Init(IMG_INIT_PNG)){
+        // fprintf(stderr, "Error IMG_Init : %s", SDL_GetError());
+        return -1;
+    }
+
+    //SDL_TTF INIT
+    if(TTF_Init()){
+        // fprintf(stderr, "Error TTF_Init : %s", SDL_GetError());
+        return -1;
+    }
+    //SDL_Mixer INIT
+    if(!Mix_Init(MIX_INIT_MP3)){
+        // fprintf(stderr, "Error Mix_Init : %s", SDL_GetError());
+        return -1;
+    }
+    if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024)){
+        // fprintf(stderr, "Error Mix_OpenAudio : %s", SDL_GetError());
         return -1;
     }
 
@@ -181,6 +198,11 @@ int libInit(){
 }
 
 void libDeInit(){
+    //SDL_Mixer DEINIT
+    Mix_CloseAudio();
+    Mix_Quit();
+    //SDL_TTF DEINIT
+    TTF_Quit();
     //SDL_Image DEINIT
     IMG_Quit();
     //SDL DEINIT

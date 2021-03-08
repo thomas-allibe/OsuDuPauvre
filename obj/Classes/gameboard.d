@@ -21,11 +21,11 @@ obj/Classes/gameboard.o: src/Classes/gameboard.c \
  include/SDL2/SDL_power.h include/SDL2/SDL_render.h \
  include/SDL2/SDL_sensor.h include/SDL2/SDL_shape.h \
  include/SDL2/SDL_system.h include/SDL2/SDL_timer.h \
- include/SDL2/SDL_version.h include/mySDL2_tools.h \
- include/SDL2/SDL_image.h include/SDL2/SDL.h include/my_events.h \
- include/global_variables.h include/global_variables.h \
- include/Classes/game_component.h include/Classes/background.h \
- include/Classes/circle.h
+ include/SDL2/SDL_version.h include/SDL2/SDL_mixer.h \
+ include/mySDL2_tools.h include/SDL2/SDL_image.h include/SDL2/SDL.h \
+ include/my_events.h include/global_variables.h \
+ include/global_variables.h include/Classes/game_component.h \
+ include/Classes/background.h include/Classes/circle.h
 
 include/Classes/gameboard.h:
 
@@ -118,6 +118,8 @@ include/SDL2/SDL_system.h:
 include/SDL2/SDL_timer.h:
 
 include/SDL2/SDL_version.h:
+
+include/SDL2/SDL_mixer.h:
 
 include/mySDL2_tools.h:
 

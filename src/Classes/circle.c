@@ -130,7 +130,7 @@ int Circle_draw(Circle *me, double prediction){
 }
 
 int Circle_is_pos_on_circle(Circle *me, int x, int y){
-    if(me->hit_flag)
+    if(me->hit_flag <= 0)
         return 0;
     float distance = sqrt((x-me->x_center)*(x-me->x_center)
                         +(y-me->y_center)*(y-me->y_center));
@@ -139,7 +139,7 @@ int Circle_is_pos_on_circle(Circle *me, int x, int y){
 
 int Circle_set_hit(Circle *me){
 	if(me->hit_flag)
-        return 0; // Circle not hitable
+        return -1; // Circle not hitable -> disapearing
     if(me->life_time <= me->ac_hit+EXTRA_LIFE_SPAN/2 && 
 		me->life_time >= me->ac_hit-EXTRA_LIFE_SPAN/2){
 		// 300 pts
@@ -169,7 +169,7 @@ int Circle_has_time_left(Circle *me){
 }
 
 int Circle_is_missed(Circle *me){
-    return me->hit_flag;
+    return me->hit_flag == HIT_FLAG_MISS;
 }
 
 int Circle_to_destroy(Circle *me){

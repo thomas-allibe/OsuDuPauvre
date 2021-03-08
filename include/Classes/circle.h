@@ -9,6 +9,7 @@
 
 #define EXTRA_LIFE_SPAN 75
 #define SHOW_PTS_DURATION 300
+
 #define HIT_FLAG_MISS -1
 #define HIT_FLAG_50 1
 #define HIT_FLAG_100 2
@@ -100,6 +101,7 @@ int Circle_is_pos_on_circle(Circle *me, int x, int y);
   @brief	Set hit flag and returns points
   @param	me	pointer to circle
   @return	hit points (50 / 100 / 300) or 0 if timing is bad
+            or -1 if circle is disapearing
  */
 int Circle_set_hit(Circle *me);
 

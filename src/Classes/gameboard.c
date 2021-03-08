@@ -32,6 +32,9 @@ GameBoard* GameBoard_ctor(SDL_Renderer *renderer){
     me->circle_textures = (Circle_Textures){NULL, NULL, NULL, NULL};
     me->item_list = NULL;
     me->item_list_end = NULL;
+    me->music = NULL;
+    me->hit_sound = NULL;
+    me->combo_break = NULL;
 
 /* -------------------------------- SDL_video ------------------------------- */
 
@@ -60,6 +63,11 @@ GameBoard* GameBoard_ctor(SDL_Renderer *renderer){
     me->item_list = ItemList_init(tmp_circle, 1);
     me->item_list_end = me->item_list;
 
+/* --------------------------------- Sounds --------------------------------- */
+
+    Mix_AllocateChannels(NB_CHANNELS); //For hit and combo break sounds
+    Mix_Volume(-1, MIX_MAX_VOLUME/10);
+
 /* --------------------------------- Player --------------------------------- */
 
     me->score = 0;
@@ -76,9 +84,24 @@ GameBoard* GameBoard_ctor(SDL_Renderer *renderer){
 
 void GameBoard_dtor(GameBoard *me){
     // No need to set pointers to NULL since GameBoard structure will be free
+    //Music
+    
+    if(me->combo_break != NULL){
+        Mix_FreeChunk(me->combo_break);
+    }
+    if(me->hit_sound != NULL){
+        Mix_FreeChunk(me->hit_sound);
+    }
+    if(me->music != NULL){
+        if(Mix_PlayingMusic())
+            Mix_HaltMusic();
+        Mix_FreeMusic(me->music);
+    }
+
     if(me->item_list != NULL){
         ItemList_free_list_and_items(me->item_list);
     }
+    //Textures
     if(me->circle_textures.miss != NULL){
         SDL_DestroyTexture(me->circle_textures.miss);
     }
@@ -91,6 +114,7 @@ void GameBoard_dtor(GameBoard *me){
     if(me->circle_textures.circle != NULL){
         SDL_DestroyTexture(me->circle_textures.circle);
     }
+    //Objects
     if(me->pause_bg != NULL){
         Background_dtor(me->pause_bg);
     }
@@ -117,7 +141,7 @@ int GameBoard_processEvent(GameBoard *me, Input *user_input){
 /* ------------------------------ SWITCH: Pause ----------------------------- */
         case Pause:
             if(user_input->pause){
-                me->GameState = Running;
+                me->GameState = Starting;
             }
 
             break;
@@ -126,24 +150,37 @@ int GameBoard_processEvent(GameBoard *me, Input *user_input){
         case Running:
             if(user_input->hit1 || user_input->hit2){
                 int hit_points = 0;
-                switch(me->item_list->type){
-                    case 1:
-                        hit_points = Circle_set_hit(me->item_list->circle);
-                        if(hit_points){
-                            if(Circle_is_pos_on_circle(me->item_list->circle, user_input->mouse_x, user_input->mouse_y)){
-                                me->combo++;
-                                me->score += hit_points*me->combo;
+                Uint8 check_next = 1;
+                ItemList *tmp = me->item_list;
+                while(check_next && tmp!=NULL){
+                    switch(tmp->type){
+                        case 1:
+                            hit_points = Circle_set_hit(tmp->circle);
+                            if(hit_points > 0){                               
+                                if(Circle_is_pos_on_circle(tmp->circle, user_input->mouse_x, user_input->mouse_y)){
+                                    me->combo++;
+                                    me->score += hit_points*me->combo;
+                                    if(Mix_PlayChannel(-1, me->hit_sound, 0) == -1){
+                                        return -1;
+                                    }
+                                }
+                                check_next = 0; //Don't check next item
                             }
-                        }
-                        break;
-                    case 2:
+                            else if(hit_points == 0){ // Bad timing
+                                check_next = 0; //Don't check next item
+                            }
+                            //  if(hit_points == -1) => is disapearing => check_next = 1
+                            break;
+                        case 2:
 
-                        break;
-                    case 3:
-                        
-                        break;
-                    default:
-                        ;
+                            break;
+                        case 3:
+                            
+                            break;
+                        default:
+                            ;
+                    }
+                    tmp = tmp->next;
                 }
             }
             else if(user_input->pause){
@@ -170,12 +207,23 @@ int GameBoard_update(GameBoard *me, Uint32 dt){
             if(me->start_time <= 0){
                 me->GameState = Running;
                 me->start_time = START_TIME;
+                if(!Mix_PlayingMusic()){
+                    if(Mix_PlayMusic(me->music, -1)){
+                        return -1;
+                    }
+                    Mix_VolumeMusic(MIX_MAX_VOLUME/10);
+                }
+                if(Mix_PausedMusic()){
+                    Mix_ResumeMusic();
+                }
             }
             break;
 
 /* ------------------------------ SWITCH: Pause ----------------------------- */
         case Pause:
-        
+            if(Mix_PlayingMusic() && !Mix_PausedMusic()){
+                Mix_PauseMusic();
+            }
             break;
 
 /* ----------------------------- SWITCH: Running ---------------------------- */
@@ -189,8 +237,14 @@ int GameBoard_update(GameBoard *me, Uint32 dt){
                         //Only check for the first item since next it's the oldest
                         if(Circle_to_destroy(tmp_list->circle)){
                             if(Circle_is_missed(tmp_list->circle)){
+                                if(me->combo > 5){
+                                    if(Mix_PlayChannel(-1, me->combo_break, 0) == -1){
+                                        return -1;
+                                    }
+                                }
                                 me->health--;
                                 me->combo = 0;
+                                // fprintf(stdout, "\rSCORE=%08d, COMBO=%04d, HEALTH=%02d", me->score, me->combo, me->health);
                             }
                             tmp_list = ItemList_free_first(tmp_list);
                             me->item_list = tmp_list; //Update the new list pointer
@@ -274,14 +328,18 @@ int GameBoard_load_assets(GameBoard *me){
 
 /* ---------------------------- Pause Background ---------------------------- */
 
-    me->pause_bg = Background_ctor_file(me->renderer, "../images/pause-overlay.png");
+    me->pause_bg = Background_ctor_file(me->renderer, ASSET_TEXTURE_PAUSE_BG);
     if(me->pause_bg == NULL){
         return -1;
     }
 
+/* ------------------------------------ - ----------------------------------- */
+/* -------------------------------- Textures -------------------------------- */
+/* ------------------------------------ - ----------------------------------- */
+
 /* ----------------------------- Circle Texture ----------------------------- */
 
-    me->circle_textures.circle = loadImageStream("../images/hitcircle_2.png", PNG, me->renderer);
+    me->circle_textures.circle = loadImageStream(ASSET_TEXTURE_CIRCLE, PNG, me->renderer);
     if(me->circle_textures.circle == NULL){
         return -1;
     }
@@ -314,7 +372,7 @@ int GameBoard_load_assets(GameBoard *me){
 
 /* ------------------------- Circle Overlay Texture ------------------------- */
 
-    me->circle_textures.overlay = loadImageStatic("../images/hitcircleoverlay.png", PNG, me->renderer);
+    me->circle_textures.overlay = loadImageStatic(ASSET_TEXTURE_CIRCLE_HOVERLAY, PNG, me->renderer);
     if(me->circle_textures.overlay == NULL){
         return -1;
     }
@@ -324,7 +382,7 @@ int GameBoard_load_assets(GameBoard *me){
 
 /* ----------------------------- Approach circle ---------------------------- */
 
-    me->circle_textures.approach = loadImageStatic("../images/approachcircle.png", PNG, me->renderer);
+    me->circle_textures.approach = loadImageStatic(ASSET_TEXTURE_CIRCLE_APPROACH, PNG, me->renderer);
     if(me->circle_textures.approach == NULL){
         return -1;
     }
@@ -334,7 +392,7 @@ int GameBoard_load_assets(GameBoard *me){
 
 /* ---------------------------------- Miss ---------------------------------- */
 
-    me->circle_textures.miss = loadImageStatic("../images/hit0@2x.png", PNG, me->renderer);
+    me->circle_textures.miss = loadImageStatic(ASSET_TEXTURE_CIRCLE_MISS, PNG, me->renderer);
     if(me->circle_textures.miss == NULL){
         return -1;
     }
@@ -344,7 +402,7 @@ int GameBoard_load_assets(GameBoard *me){
 
 /* --------------------------------- Hit 50 --------------------------------- */
 
-    me->circle_textures._50 = loadImageStatic("../images/hit50.png", PNG, me->renderer);
+    me->circle_textures._50 = loadImageStatic(ASSET_TEXTURE_CIRCLE_50, PNG, me->renderer);
     if(me->circle_textures._50 == NULL){
         return -1;
     }
@@ -354,7 +412,7 @@ int GameBoard_load_assets(GameBoard *me){
 
 /* --------------------------------- Hit 100 -------------------------------- */
 
-    me->circle_textures._100 = loadImageStatic("../images/hit100.png", PNG, me->renderer);
+    me->circle_textures._100 = loadImageStatic(ASSET_TEXTURE_CIRCLE_100, PNG, me->renderer);
     if(me->circle_textures._100 == NULL){
         return -1;
     }
@@ -364,11 +422,29 @@ int GameBoard_load_assets(GameBoard *me){
 
 /* --------------------------------- Hit 300 -------------------------------- */
 
-    me->circle_textures._300 = loadImageStatic("../images/hit300.png", PNG, me->renderer);
+    me->circle_textures._300 = loadImageStatic(ASSET_TEXTURE_CIRCLE_300, PNG, me->renderer);
     if(me->circle_textures._300 == NULL){
         return -1;
     }
     if(SDL_SetTextureBlendMode(me->circle_textures._300, SDL_BLENDMODE_BLEND)){
+        return -1;
+    }
+
+/* ------------------------------------ - ----------------------------------- */
+/* ---------------------------------- Music --------------------------------- */
+/* ------------------------------------ - ----------------------------------- */
+
+    me->music = Mix_LoadMUS(ASSET_MUSIC_DIR "Gintama_End_29_Full.mp3");
+    if(me->music == NULL){
+        return -1;
+    }
+
+    me->hit_sound = Mix_LoadWAV(ASSET_SOUND_HIT);
+    if(me->hit_sound == NULL){
+        return -1;
+    }
+    me->combo_break = Mix_LoadWAV(ASSET_SOUND_BREAK);
+    if(me->combo_break == NULL){
         return -1;
     }
 

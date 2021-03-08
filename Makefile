@@ -33,7 +33,7 @@ BINDIR = bin
 #Compilation options
 CC = gcc
 CFLAGS = -Wall -std=c11 -pedantic -MMD -MP
-LDFLAGS = -L ./lib -lmingw32 -lSDL2main -lSDL2 -liniparser_so -lSDL2_image
+LDFLAGS = -L ./lib -lmingw32 -lSDL2main -lSDL2 -liniparser_so -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 INCFLAGS = -I ./$(INCDIR)
 
 #Files

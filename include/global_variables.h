@@ -5,7 +5,24 @@
 
 /* ------------------------------ Global Define ----------------------------- */
 
-#define MS_PER_UPDATE 16
+#define MS_PER_UPDATE 20
+
+/* ------------------------------ Global Assets ----------------------------- */
+
+#define ASSET_TEXTURE_PAUSE_BG "../images/pause-overlay.png"
+#define ASSET_TEXTURE_CIRCLE "../images/hitcircle_2.png"
+#define ASSET_TEXTURE_CIRCLE_HOVERLAY "../images/hitcircleoverlay.png"
+#define ASSET_TEXTURE_CIRCLE_APPROACH "../images/approachcircle.png"
+#define ASSET_TEXTURE_CIRCLE_MISS "../images/hit0@2x.png"
+#define ASSET_TEXTURE_CIRCLE_50 "../images/hit50.png"
+#define ASSET_TEXTURE_CIRCLE_100 "../images/hit100.png"
+#define ASSET_TEXTURE_CIRCLE_300 "../images/hit300.png"
+
+#define ASSET_SOUND_HIT "../sounds/drum-hitclap.wav"
+#define ASSET_SOUND_BREAK "../sounds/combobreak.wav"
+#define ASSET_SOUND_COUNT "../sounds/count1s.wav"
+
+#define ASSET_MUSIC_DIR "../sounds/music/"
 
 /* ------------------------------ Global Struct ----------------------------- */
 

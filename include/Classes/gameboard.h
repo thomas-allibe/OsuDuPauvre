@@ -2,6 +2,7 @@
 #define GAMEBOARD_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "mySDL2_tools.h"
@@ -13,6 +14,7 @@
 
 #define START_TIME 500
 #define SPAWN_PERIOD 500
+#define NB_CHANNELS 8
 
 /****************************************************************************
  *    PUBLIC TYPES
@@ -49,6 +51,10 @@ typedef struct{
     ItemList *item_list_end;
     SDL_Rect spawn_region;
     int spawn_time;
+    //Sounds
+    Mix_Music *music;
+    Mix_Chunk *hit_sound;
+    Mix_Chunk *combo_break;
     //Player
     int health;
     Uint32 score;
