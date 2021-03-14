@@ -1,5 +1,6 @@
-obj/Classes/circle.o: src/Classes/circle.c include/Classes/circle.h \
- include/SDL2/SDL.h include/SDL2/SDL_main.h include/SDL2/SDL_stdinc.h \
+obj/Classes/score_display.o: src/Classes/score_display.c \
+ include/Classes/score_display.h include/SDL2/SDL.h \
+ include/SDL2/SDL_main.h include/SDL2/SDL_stdinc.h \
  include/SDL2/SDL_config.h include/SDL2/SDL_platform.h \
  include/SDL2/begin_code.h include/SDL2/close_code.h \
  include/SDL2/SDL_assert.h include/SDL2/SDL_atomic.h \
@@ -21,9 +22,9 @@ obj/Classes/circle.o: src/Classes/circle.c include/Classes/circle.h \
  include/SDL2/SDL_render.h include/SDL2/SDL_sensor.h \
  include/SDL2/SDL_shape.h include/SDL2/SDL_system.h \
  include/SDL2/SDL_timer.h include/SDL2/SDL_version.h \
- include/SDL2/SDL_Mixer.h include/global_variables.h
+ include/mySDL2_tools.h include/SDL2/SDL_image.h include/SDL2/SDL.h
 
-include/Classes/circle.h:
+include/Classes/score_display.h:
 
 include/SDL2/SDL.h:
 
@@ -115,6 +116,8 @@ include/SDL2/SDL_timer.h:
 
 include/SDL2/SDL_version.h:
 
-include/SDL2/SDL_Mixer.h:
+include/mySDL2_tools.h:
 
-include/global_variables.h:
+include/SDL2/SDL_image.h:
+
+include/SDL2/SDL.h:

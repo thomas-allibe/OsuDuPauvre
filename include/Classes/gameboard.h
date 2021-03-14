@@ -11,10 +11,12 @@
 #include "Classes/game_component.h"
 #include "Classes/background.h"
 #include "Classes/circle.h"
+#include "Classes/score_display.h"
 
-#define START_TIME 500
+#define START_TIME 3000
 #define SPAWN_PERIOD 500
 #define NB_CHANNELS 8
+#define SCORE_NB_DIGIT 8
 
 /****************************************************************************
  *    PUBLIC TYPES
@@ -44,6 +46,10 @@ typedef struct{
     //Objects / Textures
     Background *background;
     Background *pause_bg;
+    Background *count_1;
+    Background *count_2;
+    Background *count_3;
+    ScoreDisplay *score_display;
     Circle_Textures circle_textures;
 	SDL_Rect circle_pos;
 	int circle_radius;
@@ -53,11 +59,13 @@ typedef struct{
     int spawn_time;
     //Sounds
     Mix_Music *music;
-    Mix_Chunk *hit_sound;
-    Mix_Chunk *combo_break;
+    Mix_Chunk *count_sound;
+    int count_flag;
+    Circle_Sounds circle_sounds;
     //Player
     int health;
     Uint32 score;
+    SDL_bool score_update;
     Uint16 combo;
     //Game
     GBState GameState;

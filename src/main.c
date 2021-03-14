@@ -124,8 +124,8 @@ int main(int argc, char *argv[]){
     /* -------------------------------- UserEvent ------------------------------- */
 
         GetUserEvent(&user_input);
-        if(user_input.quit == SDL_TRUE)
-            goto Quit;
+        if(user_input.quit)
+            goto Error;
         GameBoard_processEvent(gb, &user_input);
 
     /* --------------------------------- Update --------------------------------- */
@@ -147,10 +147,11 @@ int main(int argc, char *argv[]){
 /* ---------------------------------- Error --------------------------------- */
 
 Error:
-    fprintf(stderr, "Error:\n%s%s\n", SDL_GetError());
+    if(!user_input.quit)
+        fprintf(stderr, "Error:\n%s%s\n", SDL_GetError());
 
 /* ---------------------------------- Quit ---------------------------------- */
-Quit:
+
     fprintf(stderr, "\nQuit\n");
     if(gb != NULL)
         GameBoard_dtor(gb);

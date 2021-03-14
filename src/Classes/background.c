@@ -6,6 +6,11 @@
 
 Background* Background_ctor_file(SDL_Renderer *r, const char *path){
 
+/* --------------------------------- Assert --------------------------------- */
+
+    SDL_assert(r);
+    SDL_assert(path);
+
 /* ---------------------------- Memory Allocation --------------------------- */
     
     Background *me = NULL;
@@ -26,11 +31,26 @@ Background* Background_ctor_file(SDL_Renderer *r, const char *path){
         Background_dtor(me);
         return NULL;
     }
-    
+
+/* -------------------------------- Set Mode -------------------------------- */
+
+    me->mode = BG_DrawMode_Full;
+    me->pos.x = 0;
+    me->pos.y = 0;
+    SDL_GetRendererOutputSize(me->renderer, &me->pos.w, &me->pos.h);
+
     return me;
 }
 
 Background* Background_ctor_color(SDL_Renderer *r, SDL_PixelFormat *pf, SDL_Color c, size_t w, size_t h){
+
+/* --------------------------------- Assert --------------------------------- */
+
+    SDL_assert(r);
+    SDL_assert(pf);
+    SDL_assert(pf);
+    SDL_assert(w > 0);
+    SDL_assert(h > 0);
 
 /* -------------------------------- Variables ------------------------------- */
     
@@ -88,17 +108,25 @@ Background* Background_ctor_color(SDL_Renderer *r, SDL_PixelFormat *pf, SDL_Colo
     // SDL_FreeFormat(pixelFormat);
     free(texturePixels);
 
+/* -------------------------------- Set Mode -------------------------------- */
+
+    me->mode = BG_DrawMode_Full;
+    me->pos.x = 0;
+    me->pos.y = 0;
+    SDL_GetRendererOutputSize(me->renderer, &me->pos.w, &me->pos.h);
+
     return me;
 }
 
 void Background_dtor(Background *me){
+    SDL_assert(me);
+    
     me->renderer = NULL;
     if(me->texture != NULL){
         SDL_DestroyTexture(me->texture);
         me->texture = NULL;
     }
-    if(me != NULL)
-        free(me);
+    free(me);
 }
 
 /****************************************************************************
@@ -106,5 +134,51 @@ void Background_dtor(Background *me){
  ***************************************************************************/
 
 int Background_draw(const Background *me){
-	return SDL_RenderCopy(me->renderer, me->texture, NULL, NULL);
+	SDL_assert(me);
+
+    return SDL_RenderCopy(me->renderer, me->texture, NULL, &me->pos);
+}
+
+int Background_set_draw_mode(Background *me, BG_DrawMode mode, float *scale, SDL_Rect *custom){
+    SDL_Rect new_pos = {0, 0, 0, 0};
+    int w=0, h=0;
+    int result = 0;
+
+    SDL_assert(me);
+    switch(mode){
+        case BG_DrawMode_Full:
+            result = SDL_GetRendererOutputSize(me->renderer, &new_pos.w, &new_pos.h);
+            if(result){
+                return result;
+            }
+            break;
+        case BG_DrawMode_Scaled_Centered:
+            SDL_assert(scale);
+            SDL_assert(*scale > 0);
+
+            if(SDL_QueryTexture(me->texture, NULL, NULL, &new_pos.w, &new_pos.h)){
+                return -1;
+            }
+            result = SDL_GetRendererOutputSize(me->renderer, &w, &h);
+            if(result){
+                return result;
+            }
+            new_pos.w *= *scale;
+            new_pos.h *= *scale;
+            new_pos.x = (float)w/2 - (float)new_pos.w/2;
+            new_pos.y = (float)h/2 - (float)new_pos.h/2;
+            break;
+        case BG_DrawMode_Custom:
+            SDL_assert(custom);
+            SDL_assert(custom->w<=0 || custom->h<=0);
+            
+            new_pos = *custom;
+            break;
+        default:
+            SDL_SetError("In Background_set_draw_mode(), unknown mode selected: %d !", mode);
+            return -1;
+    }
+    me->mode = mode;
+    me->pos = new_pos;
+    return 0;
 }

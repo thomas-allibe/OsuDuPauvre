@@ -5,6 +5,11 @@
  ***************************************************************************/
 GameWindow* GameWindow_ctor(WindowOptions *w_op, RendererOptions *r_op){
 
+/* --------------------------------- Assert --------------------------------- */
+
+    SDL_assert(w_op);
+    SDL_assert(r_op);
+
 /* ---------------------------- Memory Allocation --------------------------- */
     
     GameWindow *me = NULL;
@@ -50,7 +55,10 @@ GameWindow* GameWindow_ctor(WindowOptions *w_op, RendererOptions *r_op){
 }
 
 void GameWindow_dtor(GameWindow *me){
+    SDL_assert(me);
+
     if(me->renderer != NULL){
+        // SDL_RenderFlush(me->renderer);
         SDL_DestroyRenderer(me->renderer);
         me->renderer = NULL;
     }
@@ -58,8 +66,7 @@ void GameWindow_dtor(GameWindow *me){
         SDL_DestroyWindow(me->window);
         me->window = NULL;
     }
-    if(me != NULL)
-        free(me);
+    free(me);
 }
 
 /****************************************************************************
@@ -69,13 +76,14 @@ void GameWindow_dtor(GameWindow *me){
 int GameWindow_setIcon(GameWindow *me, const char *path){
     SDL_Surface *surface = NULL;
 
+    SDL_assert(me);
+    SDL_assert(path);
+
     surface = SDL_LoadBMP(path);
     if(surface == NULL){
         return -1;
     }
-
     SDL_SetWindowIcon(me->window, surface);
-
     SDL_FreeSurface(surface);
 
     return 0;

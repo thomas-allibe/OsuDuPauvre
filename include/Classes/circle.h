@@ -2,10 +2,14 @@
 #define CIRCLE_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_Mixer.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "global_variables.h"
+
+// #define errChk(x) x;
+//if(x){return -1;}
 
 #define EXTRA_LIFE_SPAN 75
 #define SHOW_PTS_DURATION 300
@@ -25,6 +29,11 @@ typedef struct{
 	SDL_Texture *_300;
 }Circle_Textures;
 
+typedef struct{
+    Mix_Chunk *hit_sound;
+    Mix_Chunk *combo_break;
+}Circle_Sounds;
+
 /****************************************************************************
  *    PUBLIC TYPES
  ***************************************************************************/
@@ -32,6 +41,7 @@ typedef struct{
 typedef struct{
     SDL_Renderer *renderer;
 	const Circle_Textures *textures;
+	const Circle_Sounds *sounds;
     SDL_Rect pos; //Circle position
 	SDL_Rect ac_pos; //Approach circle position
 	int ac_w_start;
@@ -60,7 +70,7 @@ typedef struct{
   @return   Pointer to the GameBoard instance. NULL if failed.
 			Use Circle_dtor() to destroy it.
  */
-Circle* Circle_ctor(SDL_Renderer *r, Circle_Textures *ct, int radius, SDL_Rect *pos);
+Circle* Circle_ctor(SDL_Renderer *r, Circle_Textures *ct, Circle_Sounds *cs, int radius, SDL_Rect *pos);
 
 /**
   @brief    Destroy a Circle instance
@@ -79,7 +89,7 @@ void Circle_dtor(Circle *me);
   @param	dt	elapsed time
   @return	0 on succes, -1 on error
  */
-void Circle_update(Circle *me, int dt);
+void Circle_update(Circle *me, int dt, Uint16 combo);
 
 /**
   @brief	Draw the circle texture on renderer linked in ctor.
@@ -98,12 +108,14 @@ int Circle_draw(Circle *me, double prediction);
 int Circle_is_pos_on_circle(Circle *me, int x, int y);
 
 /**
-  @brief	Set hit flag and returns points
+  @brief	Compute if circle has been hit with the right timing
   @param	me	pointer to circle
-  @return	hit points (50 / 100 / 300) or 0 if timing is bad
+  @param    x     x position of the mouse
+  @param    y     y position of the mouse
+  @return	hit points (50 / 100 / 300), 0 if timing/position is bad
             or -1 if circle is disapearing
  */
-int Circle_set_hit(Circle *me);
+int Circle_hit(Circle *me, int x, int y);
 
 /**
   @brief	Check if circle has time left

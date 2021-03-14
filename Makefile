@@ -48,6 +48,7 @@ SRC += src/Classes/game_window.c
 SRC += src/Classes/gameboard.c
 SRC += src/Classes/background.c
 SRC += src/Classes/circle.c
+SRC += src/Classes/score_display.c
 # SRC = $(wildcard *.c) can be used instead of manual completion
 
 ######################### DO NOT MODIFY #########################

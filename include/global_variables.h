@@ -6,9 +6,15 @@
 /* ------------------------------ Global Define ----------------------------- */
 
 #define MS_PER_UPDATE 20
+#define SDL_ASSERT_LEVEL 2
+
+/* ------------------------------ Global Inline ----------------------------- */
+
+// #define errChk(x) if(x){return -1;}
 
 /* ------------------------------ Global Assets ----------------------------- */
 
+#define ASSET_TEXTURE_FOLDER "../images/"
 #define ASSET_TEXTURE_PAUSE_BG "../images/pause-overlay.png"
 #define ASSET_TEXTURE_CIRCLE "../images/hitcircle_2.png"
 #define ASSET_TEXTURE_CIRCLE_HOVERLAY "../images/hitcircleoverlay.png"
@@ -17,6 +23,9 @@
 #define ASSET_TEXTURE_CIRCLE_50 "../images/hit50.png"
 #define ASSET_TEXTURE_CIRCLE_100 "../images/hit100.png"
 #define ASSET_TEXTURE_CIRCLE_300 "../images/hit300.png"
+#define ASSET_TEXTURE_COUNT_1 "../images/count1.png"
+#define ASSET_TEXTURE_COUNT_2 "../images/count2.png"
+#define ASSET_TEXTURE_COUNT_3 "../images/count3.png"
 
 #define ASSET_SOUND_HIT "../sounds/drum-hitclap.wav"
 #define ASSET_SOUND_BREAK "../sounds/combobreak.wav"
